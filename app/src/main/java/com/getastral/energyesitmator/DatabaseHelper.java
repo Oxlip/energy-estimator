@@ -1,6 +1,5 @@
 package com.getastral.energyesitmator;
 
-import android.bluetooth.BluetoothAdapter;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -27,7 +26,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_DEVICES = "Devices";
 
     // Devices table's column names
-    private static final String FILED_ID = "id";
+    private static final String FIELD_ID = "id";
     private static final String FIELD_NAME = "name";
     private static final String FIELD_APPLIANCE_TYPE = "appliance_type";
     private static final String FIELD_APPLIANCE_MAKE = "appliance_make";
@@ -46,7 +45,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_DEVICES + "(" +
-                FILED_ID + " INTEGER PRIMARY KEY," +
+                FIELD_ID + " INTEGER PRIMARY KEY," +
                 FIELD_NAME + " TEXT NOT NULL," +
                 FIELD_APPLIANCE_TYPE + " TEXT," +
                 FIELD_APPLIANCE_MAKE + " TEXT," +
@@ -80,6 +79,9 @@ class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        if (device.id != 0) {
+            values.put(FIELD_ID, device.id);
+        }
         values.put(FIELD_NAME, device.name);
         values.put(FIELD_APPLIANCE_TYPE, device.applianceType);
         values.put(FIELD_APPLIANCE_MAKE, device.applianceMake);
@@ -100,7 +102,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
      * Check whether the given device exists in the database.
      */
     Boolean isRegistered(int id) {
-        String countQuery = "SELECT  * FROM " + TABLE_DEVICES + "WHERE " + FILED_ID + "==" + id;
+        String countQuery = "SELECT  * FROM " + TABLE_DEVICES + "WHERE " + FIELD_ID + "==" + id;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
         cursor.close();
@@ -125,7 +127,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 Device device = new Device(context);
-                device.id = cursor.getInt(cursor.getColumnIndexOrThrow(FILED_ID));
+                device.id = cursor.getInt(cursor.getColumnIndexOrThrow(FIELD_ID));
                 device.name = cursor.getString(cursor.getColumnIndexOrThrow(FIELD_NAME));
                 device.applianceType = cursor.getString(cursor.getColumnIndexOrThrow(FIELD_APPLIANCE_TYPE));
                 device.applianceMake = cursor.getString(cursor.getColumnIndexOrThrow(FIELD_APPLIANCE_MAKE));
@@ -136,7 +138,6 @@ class DatabaseHelper extends SQLiteOpenHelper {
                 device.standbyWatts = cursor.getFloat(cursor.getColumnIndexOrThrow(FIELD_STANDBY_WATTS));
                 device.activeHours = cursor.getFloat(cursor.getColumnIndexOrThrow(FIELD_ACTIVE_HOURS));
                 device.standbyHours = cursor.getFloat(cursor.getColumnIndexOrThrow(FIELD_STANDBY_HOURS));
-                device.save();
 
                 deviceList.add(device);
             } while (cursor.moveToNext());
@@ -151,7 +152,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
      */
     public void removeDevice(Device device) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_DEVICES, FILED_ID + " = ?",
+        db.delete(TABLE_DEVICES, FIELD_ID + " = ?",
                 new String[] { String.valueOf(device.id) });
         db.close();
     }
