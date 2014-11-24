@@ -2,6 +2,8 @@ package com.getastral.energyesitmator;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,9 +13,17 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.Legend;
 import com.melnykov.fab.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MainFragment extends Fragment {
 
@@ -65,7 +75,11 @@ public class MainFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_main, container, false);
+        View view = inflater.inflate(R.layout.fragment_main, container, false);
+
+        setupChart(view);
+
+        return view;
     }
 
     @Override
@@ -108,6 +122,98 @@ public class MainFragment extends Fragment {
         mCallbacks = sDummyCallbacks;
     }
 
+    private void setData(PieChart chart, int count, float range) {
+
+        float mult = range;
+
+        ArrayList<Entry> yVals1 = new ArrayList<Entry>();
+
+        // IMPORTANT: In a PieChart, no values (Entry) should have the same
+        // xIndex (even if from different DataSets), since no values can be
+        // drawn above each other.
+        for (int i = 0; i < count + 1; i++) {
+            yVals1.add(new Entry((float) (Math.random() * mult) + mult / 5, i));
+        }
+
+        ArrayList<String> xVals = new ArrayList<String>();
+
+        for (int i = 0; i < count + 1; i++)
+            xVals.add("" + i);
+
+        PieDataSet set1 = new PieDataSet(yVals1, "Election Results");
+        set1.setSliceSpace(3f);
+
+        // add a lot of colors
+
+        ArrayList<Integer> colors = new ArrayList<Integer>();
+
+        for (int c : ColorTemplate.VORDIPLOM_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.JOYFUL_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.COLORFUL_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.LIBERTY_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.PASTEL_COLORS)
+            colors.add(c);
+
+        colors.add(ColorTemplate.getHoloBlue());
+
+        set1.setColors(colors);
+
+        PieData data = new PieData(xVals, set1);
+        chart.setData(data);
+
+        // undo all highlights
+        chart.highlightValues(null);
+
+        chart.invalidate();
+    }
+
+
+    private void setupChart(View view) {
+        PieChart  mChart = (PieChart) view.findViewById(R.id.chart);
+
+        // change the color of the center-hole
+        mChart.setHoleColor(Color.rgb(235, 235, 235));
+        mChart.setHoleRadius(60f);
+        mChart.setDrawHoleEnabled(true);
+
+        mChart.setDescription("");
+
+        // draws the corresponding description value into the slice
+        mChart.setDrawXValues(true);
+        mChart.setDrawYValues(true);
+
+        mChart.setRotationAngle(0);
+
+        // enable rotation of the chart by touch
+        mChart.setRotationEnabled(true);
+
+        // display percentage values
+        mChart.setUsePercentValues(true);
+
+        mChart.setCenterText("MPAndroidChart\nLibrary");
+        mChart.setDrawCenterText(false);
+
+        setData(mChart, 3, 100);
+
+        mChart.animateXY(1500, 1500);
+
+        mChart.setDrawLegend(false);
+        /*
+        Legend l = mChart.getLegend();
+        l.setPosition(Legend.LegendPosition.RIGHT_OF_CHART);
+        l.setXEntrySpace(7f);
+        l.setYEntrySpace(5f);
+        */
+    }
+
     private ListView getListView() {
         View view = getView();
         if (view == null) {
@@ -137,7 +243,6 @@ public class MainFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("ddd", "doomed");
                 Device device = new Device(activity.getApplicationContext());
                 device.name = "Television";
                 device.activeHours = 10;
