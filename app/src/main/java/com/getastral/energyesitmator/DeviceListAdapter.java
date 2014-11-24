@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -85,7 +86,7 @@ public class DeviceListAdapter extends BaseAdapter {
             convertView = mInflater.inflate(R.layout.item_device_list, null);
         }
 
-        Device device = device = mDeviceList.get(position);
+        final Device device = mDeviceList.get(position);
 
         TextView txtName = (TextView) convertView.findViewById(R.id.dl_name);
         txtName.setText(device.name);
@@ -93,8 +94,25 @@ public class DeviceListAdapter extends BaseAdapter {
         SeekBar seekBar = (SeekBar) convertView.findViewById(R.id.dl_active_hours);
         seekBar.setMax(0);
         seekBar.setMax(24);
-        seekBar.setProgress((int)device.activeHours);
+        seekBar.setProgress((int) device.activeHours);
+        seekBar.setTag(device);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                int activeHours = seekBar.getProgress();
+                device.activeHours = activeHours;
+                device.save();
+                Toast.makeText(mContext, String.valueOf(activeHours), Toast.LENGTH_SHORT).show();
+            }
 
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
+        });
         return convertView;
     }
 }
