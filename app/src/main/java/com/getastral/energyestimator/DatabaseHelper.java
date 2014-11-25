@@ -73,7 +73,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             String strLine;
             while ((strLine = br.readLine()) != null) {
-                Log.d("testtttttttt", strLine);
                 applianceMakeDao.updateRaw(strLine);
             }
             in.close();
