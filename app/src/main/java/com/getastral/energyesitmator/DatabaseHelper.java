@@ -1,161 +1,387 @@
 package com.getastral.energyesitmator;
 
-import android.content.ContentValues;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.dao.RuntimeExceptionDao;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.DatabaseTable;
+import com.j256.ormlite.table.TableUtils;
+
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
 
-/** Helper class to access the Astral Database.
- *
- *  The database contains all the devices(Plug/Switch/Touch) that are registered by the user.
- *  Basically it is cached version of CloudServer's user specific data.
- **/
-class DatabaseHelper extends SQLiteOpenHelper {
+/**
+ * Database helper is used to manage the creation and upgrading of your database.
+ * This class also provides the DAOs used by the other classes.
+ */
+public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
-    // Database Version
+    private static DatabaseHelper mInstance = null;
+
+    private static final String LOG_TAG_DATABASE_HELPER = "DatabaseHelper";
+
+    // name of the database file
+    private static final String DATABASE_NAME = "energy.db";
     private static final int DATABASE_VERSION = 1;
 
-    // Database Name
-    private static final String DATABASE_NAME = "Astral";
+    // the DAO objects for various tables
+    private Dao<DeviceInfo, String> deviceInfoDao = null;
+    private Dao<ApplianceType, String> applianceTypeDao = null;
+    private Dao<ApplianceMake, String> applianceMakeDao = null;
 
-    // Devices table Name
-    private static final String TABLE_DEVICES = "Devices";
+    // cached copy of appliance type and make
+    private static List<ApplianceType> applianceTypeList = null;
+    private static List<ApplianceMake> applianceMakeList = null;
 
-    // Devices table's column names
-    private static final String FIELD_ID = "id";
-    private static final String FIELD_NAME = "name";
-    private static final String FIELD_APPLIANCE_TYPE = "appliance_type";
-    private static final String FIELD_APPLIANCE_MAKE = "appliance_make";
-    private static final String FIELD_APPLIANCE_MODEL = "appliance_model";
-    private static final String FIELD_PURCHASE_DATE = "purchase_date";
-    private static final String FIELD_PURCHASE_PRICE = "purchase_price";
-    private static final String FIELD_ACTIVE_WATTS = "active_watts";
-    private static final String FIELD_STANDBY_WATTS = "standby_watts";
-    private static final String FIELD_ACTIVE_HOURS = "active_hours";
-    private static final String FIELD_STANDBY_HOURS = "standby_hours";
+    // Hash table for faster lookup
+    private static Map<String, ApplianceType> applianceTypeMap = new HashMap<String, ApplianceType>();
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-        String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_DEVICES + "(" +
-                FIELD_ID + " INTEGER PRIMARY KEY," +
-                FIELD_NAME + " TEXT NOT NULL," +
-                FIELD_APPLIANCE_TYPE + " TEXT," +
-                FIELD_APPLIANCE_MAKE + " TEXT," +
-                FIELD_APPLIANCE_MODEL + " TEXT," +
-                FIELD_PURCHASE_DATE + " LONG," +
-                FIELD_PURCHASE_PRICE + " INT," +
-                FIELD_ACTIVE_WATTS + " FLOAT," +
-                FIELD_STANDBY_WATTS + " FLOAT," +
-                FIELD_ACTIVE_HOURS + " FLOAT," +
-                FIELD_STANDBY_HOURS + " FLOAT" +
-                ")";
-        db.execSQL(CREATE_CONTACTS_TABLE);
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Drop older table if existed
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_DEVICES);
-
-        // Create tables again
-        onCreate(db);
-    }
-
     /**
-     * Saves the device information to database.
-     * This should be happening only once(first time when connect button is clicked).
-     *
-     * @param device Device needs to be saved.
+     * Returns the existing database helper instance or creates new one if required.
+     * @return DatabaseHelper instance.
      */
-    void saveDevice(Device device) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(FIELD_NAME, device.name);
-        values.put(FIELD_APPLIANCE_TYPE, device.applianceType);
-        values.put(FIELD_APPLIANCE_MAKE, device.applianceMake);
-        values.put(FIELD_APPLIANCE_MODEL, device.applianceModel);
-        values.put(FIELD_PURCHASE_DATE, device.purchaseDate);
-        values.put(FIELD_PURCHASE_PRICE, device.purchasePrice);
-        values.put(FIELD_ACTIVE_WATTS, device.activeWatts);
-        values.put(FIELD_STANDBY_WATTS, device.standbyHours);
-        values.put(FIELD_ACTIVE_HOURS, device.activeHours);
-        values.put(FIELD_STANDBY_HOURS, device.standbyHours);
-
-        if (device.id == 0) {
-            db.insert(TABLE_DEVICES, null, values);
-        } else {
-            values.put(FIELD_ID, device.id);
-            db.update(TABLE_DEVICES, values, FIELD_ID + "=" + device.id, null);
+    public static DatabaseHelper getInstance() {
+        if (mInstance == null) {
+            mInstance = new DatabaseHelper(ApplicationGlobals.getAppContext());
         }
+        return mInstance;
+    }
 
-        db.close();
+    private void populateTables() {
+        try {
+            Dao<ApplianceMake, String> applianceMakeDao = getApplianceMakeDao();
+            Dao<ApplianceType, String> applianceTypeDao = getApplianceTypeDao();
+
+            InputStream is = ApplicationGlobals.getAppContext().getResources().openRawResource(R.raw.populate_db);
+            DataInputStream in = new DataInputStream(is);
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            String strLine;
+            while ((strLine = br.readLine()) != null) {
+                Log.d("testtttttttt", strLine);
+                applianceMakeDao.updateRaw(strLine);
+            }
+            in.close();
+        } catch (Exception e) {
+            Log.d(LOG_TAG_DATABASE_HELPER, "Can't populate database");
+            e.printStackTrace();
+        }
     }
 
     /**
-     * Check whether the given device exists in the database.
+     * Called when the database is first created.
+     * Creates required tables.
      */
-    Boolean isRegistered(int id) {
-        String countQuery = "SELECT  * FROM " + TABLE_DEVICES + "WHERE " + FIELD_ID + "==" + id;
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(countQuery, null);
-        cursor.close();
+    @Override
+    public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
+        try {
+            Log.i(DatabaseHelper.class.getName(), "onCreate");
+            TableUtils.createTable(connectionSource, DeviceInfo.class);
+            TableUtils.createTable(connectionSource, ApplianceMake.class);
+            TableUtils.createTable(connectionSource, ApplianceType.class);
+            populateTables();
+        } catch (SQLException e) {
+            Log.e(LOG_TAG_DATABASE_HELPER, "Can't create database", e);
+            throw new RuntimeException(e);
+        }
+    }
 
-        return cursor.getCount() > 0;
+    /**
+     * Called when the application is upgraded and it has a higher version number.
+     */
+    @Override
+    public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource, int oldVersion, int newVersion) {
+        try {
+            Log.i(DatabaseHelper.class.getName(), "onUpgrade");
+            TableUtils.dropTable(connectionSource, DeviceInfo.class, true);
+            // after we drop the old databases, we create the new ones
+            onCreate(db, connectionSource);
+        } catch (SQLException e) {
+            Log.e(DatabaseHelper.class.getName(), "Can't drop databases", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Returns the Database Access Object (DAO) for our DeviceInfo class. It will create it or just give the cached
+     * value.
+     */
+    public Dao<DeviceInfo, String> getDeviceInfoDao() throws SQLException {
+        if (deviceInfoDao == null) {
+            deviceInfoDao = getDao(DeviceInfo.class);
+        }
+        return deviceInfoDao;
+    }
+
+    /**
+     * Returns the Database Access Object (DAO) for ApplianceType.
+     * It will create it or just give the cached value.
+     */
+    public Dao<ApplianceType, String> getApplianceTypeDao() throws SQLException {
+        if (applianceTypeDao == null) {
+            applianceTypeDao = getDao(ApplianceType.class);
+        }
+        return applianceTypeDao;
+    }
+
+    /**
+     * Returns the Database Access Object (DAO) for ApplianceMake.
+     * It will create it or just give the cached value.
+     */
+    public Dao<ApplianceMake, String> getApplianceMakeDao() throws SQLException {
+        if (applianceMakeDao == null) {
+            applianceMakeDao = getDao(ApplianceMake.class);
+        }
+        return applianceMakeDao;
+    }
+
+    /**
+     * Returns DeviceInfo for a given deviceAddress
+     */
+    public static DeviceInfo getDeviceInfo(int id) {
+        try {
+            return getInstance().getDeviceInfoDao().queryForId(id + "");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Returns DeviceInfo for a given deviceAddress
+     */
+    public static void saveDeviceInfo(DeviceInfo deviceInfo) {
+        try {
+            getInstance().getDeviceInfoDao().createOrUpdate(deviceInfo);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
      * Returns all the devices that are registered to the user.
      *
-     * @param context Application context needs to be passed to Device() constructor.
      * @return List of devices.
      */
-    public List<Device> getDevices(Context context) {
-        List<Device> deviceList = new ArrayList<Device>();
-        String selectQuery = "SELECT  * FROM " + TABLE_DEVICES;
+    public static List<DeviceInfo> getDevices() {
+        try {
+            return getInstance().getDeviceInfoDao().queryForAll();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
 
-        // looping through all rows and adding to list
-        if (cursor.moveToFirst()) {
-            do {
-                Device device = new Device(context);
-                device.id = cursor.getInt(cursor.getColumnIndexOrThrow(FIELD_ID));
-                device.name = cursor.getString(cursor.getColumnIndexOrThrow(FIELD_NAME));
-                device.applianceType = cursor.getString(cursor.getColumnIndexOrThrow(FIELD_APPLIANCE_TYPE));
-                device.applianceMake = cursor.getString(cursor.getColumnIndexOrThrow(FIELD_APPLIANCE_MAKE));
-                device.applianceModel = cursor.getString(cursor.getColumnIndexOrThrow(FIELD_APPLIANCE_MODEL));
-                device.purchaseDate = cursor.getLong(cursor.getColumnIndexOrThrow(FIELD_PURCHASE_DATE));
-                device.purchasePrice = cursor.getLong(cursor.getColumnIndexOrThrow(FIELD_PURCHASE_PRICE));
-                device.activeWatts = cursor.getFloat(cursor.getColumnIndexOrThrow(FIELD_ACTIVE_WATTS));
-                device.standbyWatts = cursor.getFloat(cursor.getColumnIndexOrThrow(FIELD_STANDBY_WATTS));
-                device.activeHours = cursor.getFloat(cursor.getColumnIndexOrThrow(FIELD_ACTIVE_HOURS));
-                device.standbyHours = cursor.getFloat(cursor.getColumnIndexOrThrow(FIELD_STANDBY_HOURS));
-
-                deviceList.add(device);
-            } while (cursor.moveToNext());
+    /**
+     * Returns list of appliance types.
+     *
+     * @return List of appliance types.
+     */
+    public static List<ApplianceType> getApplianceTypeList() {
+        if (applianceTypeList != null) {
+            return applianceTypeList;
+        }
+        try {
+            applianceTypeList = getInstance().getApplianceTypeDao().queryForAll();
+            for (DatabaseHelper.ApplianceType applianceType: getApplianceTypeList()) {
+                applianceTypeMap.put(applianceType.name, applianceType);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
 
-        return deviceList;
+        return applianceTypeList;
     }
 
     /**
-     * Delete device from the database.
-     * @param device Device needs to be removed.
+     * Returns Appliance Type associated with the given name.
+     * @param name - Name of the appliance
+     * @return Appliance Type.
      */
-    public void removeDevice(Device device) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_DEVICES, FIELD_ID + " = ?",
-                new String[] { String.valueOf(device.id) });
-        db.close();
+    public static ApplianceType getApplianceTypeByName(String name) {
+        return applianceTypeMap.get(name);
+    }
+
+    /**
+     * Returns list of appliance makes.
+     *
+     * @return List of appliance makes.
+     */
+    public static List<ApplianceMake> getApplianceMakeList() {
+        if (applianceMakeList != null) {
+            return applianceMakeList;
+        }
+        applianceMakeList = new ArrayList<ApplianceMake>();
+        try {
+            applianceMakeList = getInstance().getApplianceMakeDao().queryForAll();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return applianceMakeList;
+    }
+
+    /**
+     * Close the database connections and clear any cached DAOs.
+     */
+    @Override
+    public void close() {
+        super.close();
+        deviceInfoDao = null;
+    }
+
+    /**
+     * Appliance Make
+     */
+    @DatabaseTable(tableName = "ApplianceMake")
+    static class ApplianceMake {
+        /**
+         * Unique Appliance Manufacturers name.
+         */
+        @DatabaseField(id = true)
+        String name;
+
+        /**
+         * Icon resource name.
+         */
+        @DatabaseField(canBeNull = true)
+        String imageName;
+
+        ApplianceMake() {
+            // needed by ormlite
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
+    /**
+     * Appliance Type.
+     */
+    @DatabaseTable(tableName = "ApplianceType")
+    static class ApplianceType {
+        /**
+         * Unique type name - Light, Fan, TV etc.
+         */
+        @DatabaseField(id = true)
+        String name;
+
+        /**
+         * True if this appliance is dimmable.
+         */
+        @DatabaseField(canBeNull = true)
+        boolean isDimmable;
+
+        /**
+         * Icon resource name.
+         */
+        @DatabaseField(canBeNull = true)
+        String imageName;
+
+        ApplianceType() {
+            // needed by ormlite
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
+    /**
+     * Information such as Name, Type etc that is associated with a device.
+     */
+    @DatabaseTable(tableName = "DeviceInfo")
+    public static class DeviceInfo {
+        /**
+         * Unique address of the device(BLE MAC address).
+         */
+        @DatabaseField(generatedId = true)
+        int id;
+
+        /**
+         * Custom name given by the user.
+         */
+        @DatabaseField
+        String name;
+
+        /**
+         * Type of the connected appliance - Light, Fan, TV etc
+         */
+        @DatabaseField
+        String applianceType;
+
+        /**
+         * Appliance manufacturer.
+         */
+        @DatabaseField
+        String applianceMake;
+
+        /**
+         * Appliance manufacturer's model number.
+         */
+        @DatabaseField
+        String applianceModel;
+
+        /**
+         * When this appliance was bought.
+         */
+        @DatabaseField
+        Date purchaseDate;
+
+        /**
+         * How many hours the device is actively used per day.
+         */
+        @DatabaseField
+        float activeHours;
+
+        /**
+         * How many hours the device is in standby mode per day.
+         */
+        @DatabaseField
+        float standbyHours;
+
+        /**
+         * How many watts the device consumes when in active mode.
+         */
+        @DatabaseField
+        float activeWatts;
+
+        /**
+         * How many watts the device consumes when in standby mode.
+         */
+        @DatabaseField
+        float standbyWatts;
+
+        DeviceInfo() {
+            // needed by ormlite
+        }
     }
 }

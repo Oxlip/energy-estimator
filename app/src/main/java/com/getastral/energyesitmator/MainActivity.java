@@ -19,14 +19,10 @@ import java.util.List;
 
 public class MainActivity extends Activity implements MainFragment.Callbacks {
 
-    DatabaseHelper db;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        db = new DatabaseHelper(this);
     }
 
 

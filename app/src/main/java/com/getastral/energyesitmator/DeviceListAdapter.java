@@ -2,6 +2,7 @@ package com.getastral.energyesitmator;
 
 import android.app.Activity;
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,7 @@ import java.util.List;
 public class DeviceListAdapter extends BaseAdapter {
 
     private Context mContext;
-    private List<Device> mDeviceList;
+    private List<DatabaseHelper.DeviceInfo> mDeviceInfoList;
     private static DeviceListAdapter mInstance = null;
 
     private static final String LOG_TAG_DEVICE_LIST_ADAPTER = "DeviceListAdapter";
@@ -39,41 +40,39 @@ public class DeviceListAdapter extends BaseAdapter {
     /**
      * Creates new instance if required.
      * @param context
-     * @param deviceList
+     * @param deviceInfoList
      * @return DeviceListAdapter instance.
      */
-    public static DeviceListAdapter getInstance(Context context, List<Device> deviceList) {
+    public static DeviceListAdapter getInstance(Context context, List<DatabaseHelper.DeviceInfo> deviceInfoList) {
         if(mInstance == null) {
             mInstance = new DeviceListAdapter();
             mInstance.mContext = context;
-            mInstance.mDeviceList = deviceList;
+            mInstance.mDeviceInfoList = deviceInfoList;
+            mInstance.registerDataSetObserver(new DeviceListObserver());
         }
         return mInstance;
     }
 
-
     /**
-     * Add newly discovered device.
-     * @param device - New device.
+     * Sets new device list. (usually called when database is updated).
      */
-    public void addDevice(Device device) {
-        mDeviceList.add(device);
-        this.notifyDataSetInvalidated();
+    public static void setDeviceInfoList(List<DatabaseHelper.DeviceInfo> deviceInfoList) {
+        mInstance.mDeviceInfoList = deviceInfoList;
     }
 
     @Override
     public int getCount() {
-        return mDeviceList.size();
+        return mDeviceInfoList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return mDeviceList.get(position);
+        return mDeviceInfoList.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return mDeviceList.indexOf(getItem(position));
+        return mDeviceInfoList.indexOf(getItem(position));
     }
 
     /**
@@ -86,22 +85,22 @@ public class DeviceListAdapter extends BaseAdapter {
             convertView = mInflater.inflate(R.layout.item_device_list, null);
         }
 
-        final Device device = mDeviceList.get(position);
+        final DatabaseHelper.DeviceInfo deviceInfo = mDeviceInfoList.get(position);
 
         TextView txtName = (TextView) convertView.findViewById(R.id.dl_name);
-        txtName.setText(device.name);
+        txtName.setText(deviceInfo.name);
 
         SeekBar seekBar = (SeekBar) convertView.findViewById(R.id.dl_active_hours);
         seekBar.setMax(0);
         seekBar.setMax(24);
-        seekBar.setProgress((int) device.activeHours);
-        seekBar.setTag(device);
+        seekBar.setProgress((int) deviceInfo.activeHours);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 int activeHours = seekBar.getProgress();
-                device.activeHours = activeHours;
-                device.save();
+                deviceInfo.activeHours = activeHours;
+                DatabaseHelper.saveDeviceInfo(deviceInfo);
+
                 Toast.makeText(mContext, String.valueOf(activeHours), Toast.LENGTH_SHORT).show();
             }
 
@@ -114,5 +113,17 @@ public class DeviceListAdapter extends BaseAdapter {
             }
         });
         return convertView;
+    }
+}
+
+class DeviceListObserver extends DataSetObserver {
+    @Override
+    public void onChanged() {
+        DeviceListAdapter.setDeviceInfoList(DatabaseHelper.getDevices());
+    }
+
+    @Override
+    public void onInvalidated() {
+
     }
 }

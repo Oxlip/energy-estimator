@@ -2,6 +2,7 @@ package com.getastral.energyesitmator;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -229,7 +230,7 @@ public class MainFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         final MainActivity activity = (MainActivity)getActivity();
         ListView listview = getListView();
-        List<Device> deviceList = activity.db.getDevices(getActivity().getApplicationContext());
+        List<DatabaseHelper.DeviceInfo> deviceList = DatabaseHelper.getDevices();
         listview.setAdapter(DeviceListAdapter.getInstance(activity, deviceList));
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -243,11 +244,15 @@ public class MainFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Device device = new Device(activity.getApplicationContext());
-                device.name = "Television";
-                device.activeHours = 10;
-                device.save();
-                DeviceListAdapter.getInstance().notifyDataSetInvalidated();
+                DatabaseHelper.DeviceInfo deviceInfo = new DatabaseHelper.DeviceInfo();
+                deviceInfo.name = "Television";
+                deviceInfo.activeHours = 10;
+                DatabaseHelper.saveDeviceInfo(deviceInfo);
+                getActivity().runOnUiThread(new Runnable() {
+                    public void run() {
+                        DeviceListAdapter.getInstance().notifyDataSetChanged();
+                    }
+                });
             }
         });
     }

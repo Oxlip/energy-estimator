@@ -30,7 +30,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|right"
             android:layout_margin="16dp"
-            android:src="@drawable/ic_launcher"
+            android:src="@drawable/plus_icon"
+            fab:fab_type="normal"
             fab:fab_colorNormal="@color/blue"
             fab:fab_colorPressed="@color/darkblue"
             fab:fab_colorRipple="@color/red" />
