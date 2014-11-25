@@ -1,4 +1,4 @@
-package com.getastral.energyesitmator;
+package com.getastral.energyestimator;
 
 import android.app.Activity;
 import android.content.Context;

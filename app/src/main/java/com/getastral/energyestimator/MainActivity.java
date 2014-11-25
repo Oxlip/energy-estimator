@@ -1,20 +1,9 @@
-package com.getastral.energyesitmator;
+package com.getastral.energyestimator;
 
 import android.app.Activity;
-import android.app.ActionBar;
-import android.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.os.Build;
-import android.widget.AdapterView;
-import android.widget.ListView;
-
-import java.util.List;
 
 
 public class MainActivity extends Activity implements MainFragment.Callbacks {
