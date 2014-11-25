@@ -79,9 +79,6 @@ class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        if (device.id != 0) {
-            values.put(FIELD_ID, device.id);
-        }
         values.put(FIELD_NAME, device.name);
         values.put(FIELD_APPLIANCE_TYPE, device.applianceType);
         values.put(FIELD_APPLIANCE_MAKE, device.applianceMake);
@@ -93,8 +90,13 @@ class DatabaseHelper extends SQLiteOpenHelper {
         values.put(FIELD_ACTIVE_HOURS, device.activeHours);
         values.put(FIELD_STANDBY_HOURS, device.standbyHours);
 
+        if (device.id == 0) {
+            db.insert(TABLE_DEVICES, null, values);
+        } else {
+            values.put(FIELD_ID, device.id);
+            db.update(TABLE_DEVICES, values, FIELD_ID + "=" + device.id, null);
+        }
 
-        db.insert(TABLE_DEVICES, null, values);
         db.close();
     }
 
