@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -239,15 +240,9 @@ public class MainFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseHelper.DeviceInfo deviceInfo = new DatabaseHelper.DeviceInfo();
-                deviceInfo.name = "Television";
-                deviceInfo.activeHours = 10;
-                DatabaseHelper.saveDeviceInfo(deviceInfo);
-                getActivity().runOnUiThread(new Runnable() {
-                    public void run() {
-                        DeviceListAdapter.getInstance().notifyDataSetChanged();
-                    }
-                });
+                FragmentManager fm = getFragmentManager();
+                NewApplianceDialog newApplianceDialog = NewApplianceDialog.newInstance("Select Appliance");
+                newApplianceDialog.show(fm, "fragment_new_appliance");
             }
         });
     }
