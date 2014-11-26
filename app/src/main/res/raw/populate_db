@@ -1,5 +1,5 @@
 INSERT INTO ApplianceType(name, isDimmable, imageName) VALUES('Lamp', 1, 'lamp');
-INSERT INTO ApplianceType(name, isDimmable, imageName) VALUES('Lamp', 1, 'cfl');
+INSERT INTO ApplianceType(name, isDimmable, imageName) VALUES('CFL Lamp', 1, 'cfl');
 INSERT INTO ApplianceType(name, isDimmable, imageName) VALUES('Fan', 1, 'fan');
 INSERT INTO ApplianceType(name, isDimmable, imageName) VALUES('Television', 0, 'tv');
 INSERT INTO ApplianceType(name, isDimmable, imageName) VALUES('Home Theatre', 0, 'home_theatre');
@@ -9,10 +9,9 @@ INSERT INTO ApplianceType(name, isDimmable, imageName) VALUES('Laptop', 0, 'lapt
 INSERT INTO ApplianceType(name, isDimmable, imageName) VALUES('Microwave Oven', 0, 'microwave_oven');
 INSERT INTO ApplianceType(name, isDimmable, imageName) VALUES('Mixer', 0, 'mixer');
 INSERT INTO ApplianceType(name, isDimmable, imageName) VALUES('Refrigerator', 0, 'refrigerator');
-INSERT INTO ApplianceType(name, isDimmable, imageName) VALUES('Vacuum Cleaner', 0, 'vacuum');
+INSERT INTO ApplianceType(name, isDimmable, imageName) VALUES('Vacuum Cleaner', 0, 'vacuum_cleaner');
 INSERT INTO ApplianceType(name, isDimmable, imageName) VALUES('Washing Macine', 0, 'washing_machine');
 INSERT INTO ApplianceType(name, isDimmable, imageName) VALUES('Water Heater', 0, 'heater_icon');
-
 INSERT INTO ApplianceMake(name) VALUES('Bluestar');
 INSERT INTO ApplianceMake(name) VALUES('Carrier');
 INSERT INTO ApplianceMake(name) VALUES('Daikin');
