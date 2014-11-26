@@ -3,10 +3,13 @@ package com.getastral.energyestimator;
 import android.app.Activity;
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -75,6 +78,17 @@ public class DeviceListAdapter extends BaseAdapter {
         return mDeviceInfoList.indexOf(getItem(position));
     }
 
+    private void loadApplianceImage(View rootView, String applianceTypeName) {
+        Context context = ApplicationGlobals.getAppContext();
+        DatabaseHelper.ApplianceType applianceType = DatabaseHelper.getApplianceTypeByName(applianceTypeName);
+
+        int imgId =  context.getResources().getIdentifier(applianceType.imageName, "drawable", context.getPackageName());
+        ImageView img = (ImageView) rootView.findViewById(R.id.dl_image);
+        Drawable imgDrawable = context.getResources().getDrawable(imgId);
+        img.setImageDrawable(imgDrawable);
+    }
+
+
     /**
      * Renders the UI for the given device item.
      */
@@ -86,6 +100,8 @@ public class DeviceListAdapter extends BaseAdapter {
         }
 
         final DatabaseHelper.DeviceInfo deviceInfo = mDeviceInfoList.get(position);
+
+        loadApplianceImage(convertView, deviceInfo.applianceType);
 
         TextView txtName = (TextView) convertView.findViewById(R.id.dl_name);
         txtName.setText(deviceInfo.name);
