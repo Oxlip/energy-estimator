@@ -196,9 +196,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         }
         try {
             applianceTypeList = getInstance().getApplianceTypeDao().queryForAll();
-            for (DatabaseHelper.ApplianceType applianceType: getApplianceTypeList()) {
-                applianceTypeMap.put(applianceType.name, applianceType);
-            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -212,6 +209,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
      * @return Appliance Type.
      */
     public static ApplianceType getApplianceTypeByName(String name) {
+        if (applianceTypeMap.size() == 0) {
+            for (DatabaseHelper.ApplianceType applianceType: getApplianceTypeList()) {
+                applianceTypeMap.put(applianceType.name, applianceType);
+            }
+        }
+
         return applianceTypeMap.get(name);
     }
 
