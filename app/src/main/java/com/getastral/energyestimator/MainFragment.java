@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -240,6 +241,7 @@ public class MainFragment extends Fragment {
         });
         ListView listview = getListView();
         listview.setAdapter(deviceListAdapter);
+        deviceListAdapter.setListView(listview);
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -255,6 +257,8 @@ public class MainFragment extends Fragment {
 
             }
         });
+        listview.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+
 
         FloatingActionButton fab = (FloatingActionButton)  getView().findViewById(R.id.fab);
         //fab.attachToListView(listview);

@@ -4,12 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +26,7 @@ public class DeviceListAdapter extends BaseAdapter {
     private List<DatabaseHelper.DeviceInfo> mDeviceInfoList;
     private static DeviceListAdapter mInstance = null;
     private OnSeekStopListener mOnSeekStopListener = null;
+    private ListView mListview = null; //listview using this adapter.
 
     private static final String LOG_TAG_DEVICE_LIST_ADAPTER = "DeviceListAdapter";
 
@@ -74,7 +75,12 @@ public class DeviceListAdapter extends BaseAdapter {
                 @Override
                 public void onChanged() {
                     super.onChanged();
-                    DeviceListAdapter.setDeviceInfoList(DatabaseHelper.getDevices());
+                    int oldCount = mInstance.getCount();
+                    List<DatabaseHelper.DeviceInfo> list = DatabaseHelper.getDevices();
+                    DeviceListAdapter.setDeviceInfoList(list);
+                    if (mInstance.mListview != null && oldCount != 0) {
+                        mInstance.mListview.setSelection(list.size() - 1);
+                    }
                 }
             });
 
@@ -114,6 +120,9 @@ public class DeviceListAdapter extends BaseAdapter {
         img.setImageDrawable(imgDrawable);
     }
 
+    public void setListView(ListView listView) {
+        mListview = listView;
+    }
 
     /**
      * Renders the UI for the given device item.
