@@ -25,8 +25,27 @@ public class DeviceListAdapter extends BaseAdapter {
     private Context mContext;
     private List<DatabaseHelper.DeviceInfo> mDeviceInfoList;
     private static DeviceListAdapter mInstance = null;
+    private OnSeekStopListener mOnSeekStopListener = null;
 
     private static final String LOG_TAG_DEVICE_LIST_ADAPTER = "DeviceListAdapter";
+
+    /**
+     * Interface definition for a callback to be invoked when seekbar seek is finished
+     */
+    public interface OnSeekStopListener {
+
+        /**
+         * Callback method to be invoked when seekbar seek is finished.
+         * <p>
+         * @param deviceInfo The deviceInfo whose value was changed.
+         * @param value New seeked value.
+         */
+        void onSeekStop(DatabaseHelper.DeviceInfo deviceInfo, int value);
+    }
+
+    public void setOnSeekStopListener(OnSeekStopListener onSeekStopListener) {
+        mOnSeekStopListener = onSeekStopListener;
+    }
 
     protected DeviceListAdapter() {
         // Exists only to defeat instantiation.
@@ -116,6 +135,10 @@ public class DeviceListAdapter extends BaseAdapter {
                 int activeHours = seekBar.getProgress();
                 deviceInfo.activeHours = activeHours;
                 DatabaseHelper.saveDeviceInfo(deviceInfo);
+
+                if (mOnSeekStopListener != null) {
+                    mOnSeekStopListener.onSeekStop(deviceInfo, activeHours);
+                }
 
                 Toast.makeText(mContext, String.valueOf(activeHours), Toast.LENGTH_SHORT).show();
             }
