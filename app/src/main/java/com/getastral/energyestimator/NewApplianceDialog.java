@@ -39,6 +39,8 @@ public class NewApplianceDialog extends DialogFragment {
                 deviceInfo.name = applianceType.name;
                 deviceInfo.applianceType = applianceType.name;
                 deviceInfo.activeHours = 0;
+                deviceInfo.activeWatts = applianceType.activeWatts;
+                deviceInfo.standbyWatts = applianceType.standbyWatts;
                 DatabaseHelper.saveDeviceInfo(deviceInfo);
                 getActivity().runOnUiThread(new Runnable() {
                     public void run() {
