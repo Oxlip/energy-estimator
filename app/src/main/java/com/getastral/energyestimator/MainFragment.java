@@ -17,6 +17,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.Legend;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -75,6 +76,7 @@ public class MainFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
         setupChart(view);
+        drawChart(view);
 
         return view;
     }
@@ -119,25 +121,25 @@ public class MainFragment extends Fragment {
         mCallbacks = sDummyCallbacks;
     }
 
-    private void setData(PieChart chart, int count, float range) {
+    private void setChartData(PieChart chart) {
+        List<DatabaseHelper.DeviceInfo> deviceList = DatabaseHelper.getDevices();
 
-        float mult = range;
-
-        ArrayList<Entry> yVals1 = new ArrayList<Entry>();
-
-        // IMPORTANT: In a PieChart, no values (Entry) should have the same
-        // xIndex (even if from different DataSets), since no values can be
-        // drawn above each other.
-        for (int i = 0; i < count + 1; i++) {
-            yVals1.add(new Entry((float) (Math.random() * mult) + mult / 5, i));
-        }
-
+        ArrayList<Entry> yVals = new ArrayList<Entry>();
         ArrayList<String> xVals = new ArrayList<String>();
 
-        for (int i = 0; i < count + 1; i++)
-            xVals.add("" + i);
+        int xIndex = 0;
+        for (DatabaseHelper.DeviceInfo deviceInfo : deviceList) {
+            float activeKw = deviceInfo.activeWatts * deviceInfo.activeHours / 1000;
+            float standbyKw = deviceInfo.standbyWatts * deviceInfo.standbyHours / 1000;
+            float totalKw = activeKw + standbyKw;
 
-        PieDataSet set1 = new PieDataSet(yVals1, "Election Results");
+            xVals.add(deviceInfo.name);
+            yVals.add(new Entry(totalKw, xIndex));
+
+            xIndex++;
+        }
+
+        PieDataSet set1 = new PieDataSet(yVals, "Appliance usage");
         set1.setSliceSpace(3f);
 
         // add a lot of colors
@@ -174,41 +176,42 @@ public class MainFragment extends Fragment {
 
 
     private void setupChart(View view) {
-        PieChart  mChart = (PieChart) view.findViewById(R.id.chart);
-
+        PieChart chart = (PieChart) view.findViewById(R.id.chart);
         // change the color of the center-hole
-        mChart.setHoleColor(Color.rgb(235, 235, 235));
-        mChart.setHoleRadius(60f);
-        mChart.setDrawHoleEnabled(true);
+        chart.setHoleColor(Color.rgb(235, 235, 235));
+        chart.setHoleRadius(60f);
+        chart.setDrawHoleEnabled(true);
 
-        mChart.setDescription("");
+        chart.setDescription("");
 
         // draws the corresponding description value into the slice
-        mChart.setDrawXValues(true);
-        mChart.setDrawYValues(true);
+        chart.setDrawXValues(false);
+        chart.setDrawYValues(true);
 
-        mChart.setRotationAngle(0);
+        chart.setRotationAngle(0);
 
         // enable rotation of the chart by touch
-        mChart.setRotationEnabled(true);
+        chart.setRotationEnabled(true);
 
         // display percentage values
-        mChart.setUsePercentValues(true);
+        chart.setUsePercentValues(true);
 
-        mChart.setCenterText("MPAndroidChart\nLibrary");
-        mChart.setDrawCenterText(false);
+        chart.setCenterText("Monthly\nExpense");
+        chart.setDrawCenterText(true);
 
-        setData(mChart, 3, 100);
+    }
 
-        mChart.animateXY(1500, 1500);
+    private void drawChart(View view) {
+        PieChart chart = (PieChart) view.findViewById(R.id.chart);
+        setChartData(chart);
 
-        mChart.setDrawLegend(false);
-        /*
-        Legend l = mChart.getLegend();
+        chart.setDrawLegend(true);
+        Legend l = chart.getLegend();
         l.setPosition(Legend.LegendPosition.RIGHT_OF_CHART);
         l.setXEntrySpace(7f);
         l.setYEntrySpace(5f);
-        */
+
+        chart.animateXY(500, 500);
     }
 
     private ListView getListView() {
@@ -225,9 +228,17 @@ public class MainFragment extends Fragment {
 
         super.onActivityCreated(savedInstanceState);
         final MainActivity activity = (MainActivity)getActivity();
-        ListView listview = getListView();
+
         List<DatabaseHelper.DeviceInfo> deviceList = DatabaseHelper.getDevices();
-        listview.setAdapter(DeviceListAdapter.getInstance(activity, deviceList));
+        DeviceListAdapter deviceListAdapter = DeviceListAdapter.getInstance(activity, deviceList);
+        deviceListAdapter.setOnSeekStopListener(new DeviceListAdapter.OnSeekStopListener() {
+            @Override
+            public void onSeekStop(DatabaseHelper.DeviceInfo deviceInfo, int value) {
+                drawChart(getView());
+            }
+        });
+        ListView listview = getListView();
+        listview.setAdapter(deviceListAdapter);
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
