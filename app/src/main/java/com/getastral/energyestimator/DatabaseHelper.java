@@ -296,6 +296,19 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         @DatabaseField(canBeNull = true)
         String imageName;
 
+        /**
+         * Average - How many watts the device consumes when in active mode.
+         */
+        @DatabaseField
+        float activeWatts;
+
+        /**
+         * Average - How many watts the device consumes when in standby mode.
+         */
+        @DatabaseField
+        float standbyWatts;
+
+
         ApplianceType() {
             // needed by ormlite
         }
