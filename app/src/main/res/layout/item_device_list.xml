@@ -18,19 +18,22 @@
         android:src="@drawable/tv"
         android:focusable="false"/>
 
-    <TextView
-        android:id="@+id/dl_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/dl_image"
-        android:layout_toRightOf="@id/dl_image"
-        android:text="Home Appliance Name"/>
-
-    <SeekBar
-        android:id="@+id/dl_active_hours"
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/dl_name"
-        android:layout_toRightOf="@id/dl_name"/>
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:layout_toEndOf="@id/dl_image"
+        android:layout_toRightOf="@id/dl_image">
+        <TextView
+            android:id="@+id/dl_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <SeekBar
+            android:id="@+id/dl_active_hours"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
 
 </RelativeLayout>
