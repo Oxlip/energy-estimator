@@ -187,7 +187,7 @@ public class MainFragment extends Fragment {
 
         // draws the corresponding description value into the slice
         chart.setDrawXValues(false);
-        chart.setDrawYValues(true);
+        chart.setDrawYValues(false);
 
         chart.setRotationAngle(0);
 
