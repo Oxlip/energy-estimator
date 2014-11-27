@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.github.mikephil.charting.charts.PieChart;
@@ -242,7 +243,16 @@ public class MainFragment extends Fragment {
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                LinearLayout layout = (LinearLayout)view.findViewById(R.id.layout_details);
+
+                // Creating the expand animation for the item
+                ExpandAnimation expandAni = new ExpandAnimation(layout, 500);
+
+                // Start the animation on the toolbar
+                layout.startAnimation(expandAni);
+
                 mCallbacks.onItemSelected(Integer.toString(position));
+
             }
         });
 
