@@ -47,6 +47,8 @@ public class NewApplianceDialog extends DialogFragment {
                         DeviceListAdapter.getInstance().notifyDataSetChanged();
                     }
                 });
+                //close the dialog
+                dismiss();
 
             }
         });
