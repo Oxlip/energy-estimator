@@ -70,7 +70,14 @@ public class DeviceListAdapter extends BaseAdapter {
             mInstance = new DeviceListAdapter();
             mInstance.mContext = context;
             mInstance.mDeviceInfoList = deviceInfoList;
-            mInstance.registerDataSetObserver(new DeviceListObserver());
+            mInstance.registerDataSetObserver(new DataSetObserver() {
+                @Override
+                public void onChanged() {
+                    super.onChanged();
+                    DeviceListAdapter.setDeviceInfoList(DatabaseHelper.getDevices());
+                }
+            });
+
         }
         return mInstance;
     }
@@ -152,17 +159,5 @@ public class DeviceListAdapter extends BaseAdapter {
             }
         });
         return convertView;
-    }
-}
-
-class DeviceListObserver extends DataSetObserver {
-    @Override
-    public void onChanged() {
-        DeviceListAdapter.setDeviceInfoList(DatabaseHelper.getDevices());
-    }
-
-    @Override
-    public void onInvalidated() {
-
     }
 }
