@@ -85,6 +85,9 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
+        View listViewHeader = getActivity().getLayoutInflater().inflate(R.layout.header_appliance_list, null);
+        getListView(view).addHeaderView(listViewHeader);
+
         changeImageColor(view, R.id.img_electricity_bill, R.drawable.bill, Color.WHITE);
         changeImageColor(view, R.id.img_electricity_saving, R.drawable.piggy, Color.GREEN);
         changeImageColor(view, R.id.img_electricity_consumed, R.drawable.energy, Color.WHITE);
@@ -152,7 +155,7 @@ public class MainFragment extends Fragment {
             xIndex++;
         }
 
-        PieDataSet set1 = new PieDataSet(yVals, "Appliance usage");
+        PieDataSet set1 = new PieDataSet(yVals, "");
         set1.setSliceSpace(3f);
 
         // add a lot of colors
@@ -227,8 +230,11 @@ public class MainFragment extends Fragment {
         chart.animateXY(500, 500);
     }
 
-    private ListView getListView() {
-        View view = getView();
+    private ListView getListView(View view) {
+        if (view == null) {
+            view = getView();
+        }
+
         if (view == null) {
             Log.d("MainFragment", "Empty view");
             return null;
@@ -250,7 +256,7 @@ public class MainFragment extends Fragment {
                 drawChart(getView());
             }
         });
-        final ListView listView = getListView();
+        final ListView listView = getListView(null);
         listView.setAdapter(deviceListAdapter);
         deviceListAdapter.setListView(listView);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -289,12 +295,12 @@ public class MainFragment extends Fragment {
     public void setActivateOnItemClick(boolean activateOnItemClick) {
         // When setting CHOICE_MODE_SINGLE, ListView will automatically
         // give items the 'activated' state when touched.
-        ListView listview = getListView();
+        ListView listview = getListView(null);
         listview.setChoiceMode(activateOnItemClick ? ListView.CHOICE_MODE_SINGLE : ListView.CHOICE_MODE_NONE);
     }
 
     private void setActivatedPosition(int position) {
-        ListView listview = getListView();
+        ListView listview = getListView(null);
         if (position == ListView.INVALID_POSITION) {
             listview.setItemChecked(mActivatedPosition, false);
         } else {
