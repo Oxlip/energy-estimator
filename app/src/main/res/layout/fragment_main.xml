@@ -29,6 +29,7 @@
                 android:layout_marginBottom="5dp"
                 android:background="@drawable/bill"/>
             <TextView
+                android:id="@+id/txt_electricity_bill"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
@@ -37,7 +38,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Usage"
+                android:text="Expected Bill"
                 android:textAllCaps="true"
                 android:textColor="@color/gray"
                 style="@style/topbar_descriptive_text"/>
@@ -56,6 +57,7 @@
                 android:layout_marginBottom="9dp"
                 android:background="@drawable/piggy"/>
             <TextView
+                android:id="@+id/txt_electricity_saving"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
@@ -81,6 +83,7 @@
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/energy"/>
             <TextView
+                android:id="@+id/txt_electricity_consumed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"

@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.Entry;
@@ -137,26 +138,44 @@ public class MainFragment extends Fragment {
         mCallbacks = sDummyCallbacks;
     }
 
-    private void setChartData(PieChart chart) {
-        List<DatabaseHelper.DeviceInfo> deviceList = DatabaseHelper.getDevices();
+    protected class PowerConsumptionInfo {
+        List<DatabaseHelper.DeviceInfo> deviceList;
+        ArrayList<Entry> usageChartYVals;
+        ArrayList<String> usageChartXVals;
+        float totalActiveWatts;
+        float totalStandbyWatts;
+        float totalActiveHours;
+        float totalStandbyHours;
 
-        ArrayList<Entry> yVals = new ArrayList<Entry>();
-        ArrayList<String> xVals = new ArrayList<String>();
+        public PowerConsumptionInfo() {
+            deviceList = DatabaseHelper.getDevices();
+            usageChartYVals = new ArrayList<Entry>();
+            usageChartXVals = new ArrayList<String>();
+            totalActiveWatts = totalStandbyWatts = 0;
+            totalActiveHours = totalStandbyHours = 0;
 
-        int xIndex = 0;
-        for (DatabaseHelper.DeviceInfo deviceInfo : deviceList) {
-            float activeKw = deviceInfo.activeWatts * deviceInfo.activeHours / 1000;
-            float standbyKw = deviceInfo.standbyWatts * deviceInfo.standbyHours / 1000;
-            float totalKw = activeKw + standbyKw;
+            int xIndex = 0;
+            for (DatabaseHelper.DeviceInfo deviceInfo : deviceList) {
+                float activeWatts = deviceInfo.activeWatts * deviceInfo.activeHours;
+                float standbyWatts = deviceInfo.standbyWatts * deviceInfo.standbyHours;
 
-            xVals.add(deviceInfo.name);
-            yVals.add(new Entry(totalKw, xIndex));
+                totalActiveWatts += activeWatts;
+                totalStandbyWatts += standbyWatts;
 
-            xIndex++;
+                totalActiveHours += deviceInfo.activeHours;
+                totalStandbyHours += deviceInfo.standbyHours;
+
+                usageChartXVals.add(deviceInfo.name);
+                usageChartYVals.add(new Entry(activeWatts + standbyWatts, xIndex));
+
+                xIndex++;
+            }
         }
+    }
 
-        PieDataSet set1 = new PieDataSet(yVals, "");
-        set1.setSliceSpace(3f);
+    private void setChartData(PieChart chart, PowerConsumptionInfo powerConsumptionInfo) {
+        PieDataSet pieDataSet = new PieDataSet(powerConsumptionInfo.usageChartYVals, "");
+        pieDataSet.setSliceSpace(3f);
 
         // add a lot of colors
 
@@ -179,9 +198,9 @@ public class MainFragment extends Fragment {
 
         colors.add(ColorTemplate.getHoloBlue());
 
-        set1.setColors(colors);
+        pieDataSet.setColors(colors);
 
-        PieData data = new PieData(xVals, set1);
+        PieData data = new PieData(powerConsumptionInfo.usageChartXVals, pieDataSet);
         chart.setData(data);
 
         // undo all highlights
@@ -212,14 +231,15 @@ public class MainFragment extends Fragment {
         // display percentage values
         chart.setUsePercentValues(true);
 
-        chart.setCenterText("Monthly\nExpense");
+        chart.setCenterText("Electricity\nExpense");
         chart.setDrawCenterText(true);
 
     }
 
     private void drawChart(View view) {
+        PowerConsumptionInfo powerConsumptionInfo = new PowerConsumptionInfo();
         PieChart chart = (PieChart) view.findViewById(R.id.chart);
-        setChartData(chart);
+        setChartData(chart, powerConsumptionInfo);
 
         chart.setDrawLegend(true);
         Legend l = chart.getLegend();
@@ -228,6 +248,30 @@ public class MainFragment extends Fragment {
         l.setYEntrySpace(5f);
 
         chart.animateXY(500, 500);
+
+        updateSummaryValue(view, powerConsumptionInfo);
+    }
+
+    private void updateSummaryValue(View view, PowerConsumptionInfo powerConsumptionInfo) {
+        float bill, savable, consumed;
+        float rate = 2.8f;
+        int yearMultiplier = 365;
+
+        consumed = (powerConsumptionInfo.totalActiveWatts + powerConsumptionInfo.totalStandbyWatts) / 1000;
+        bill = consumed * rate;
+        savable = (bill / 100 * 23) + (powerConsumptionInfo.totalStandbyWatts / 1000 * rate);
+
+        consumed *= yearMultiplier;
+        bill *= yearMultiplier;
+        savable *= yearMultiplier;
+
+        TextView txtElectricityBill = (TextView)view.findViewById(R.id.txt_electricity_bill);
+        TextView txtElectricitySavable = (TextView)view.findViewById(R.id.txt_electricity_saving);
+        TextView txtElectricityConsumed = (TextView)view.findViewById(R.id.txt_electricity_consumed);
+
+        txtElectricityBill.setText(String.format("%.0f", bill));
+        txtElectricitySavable.setText(String.format("%.0f", savable));
+        txtElectricityConsumed.setText(String.format("%.0f", consumed));
     }
 
     private ListView getListView(View view) {
