@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
+import android.widget.GridLayout;
 import android.widget.ListView;
 
 import com.github.mikephil.charting.charts.PieChart;
@@ -239,13 +239,13 @@ public class MainFragment extends Fragment {
                 drawChart(getView());
             }
         });
-        ListView listview = getListView();
-        listview.setAdapter(deviceListAdapter);
-        deviceListAdapter.setListView(listview);
-        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        final ListView listView = getListView();
+        listView.setAdapter(deviceListAdapter);
+        deviceListAdapter.setListView(listView);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                LinearLayout layout = (LinearLayout)view.findViewById(R.id.layout_details);
+                GridLayout layout = (GridLayout)view.findViewById(R.id.layout_details);
 
                 // Creating the expand animation for the item
                 ExpandAnimation expandAni = new ExpandAnimation(layout, 500);
@@ -257,8 +257,7 @@ public class MainFragment extends Fragment {
 
             }
         });
-        listview.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
-
+        listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
 
         FloatingActionButton fab = (FloatingActionButton)  getView().findViewById(R.id.fab);
         //fab.attachToListView(listview);
