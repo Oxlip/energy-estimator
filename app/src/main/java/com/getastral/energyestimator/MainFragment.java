@@ -3,6 +3,8 @@ package com.getastral.energyestimator;
 import android.app.Activity;
 import android.app.Fragment;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.app.FragmentManager;
 import android.util.Log;
@@ -12,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.github.mikephil.charting.charts.PieChart;
@@ -73,10 +76,18 @@ public class MainFragment extends Fragment {
     public MainFragment() {
     }
 
+    private void changeImageColor(View parentView, int imageId, int drawableId, int color) {
+        Drawable myIcon = getResources().getDrawable(drawableId);
+        myIcon.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        ((ImageView)parentView.findViewById(imageId)).setImageDrawable(myIcon);
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
+        changeImageColor(view, R.id.img_electricity_bill, R.drawable.bill, Color.WHITE);
+        changeImageColor(view, R.id.img_electricity_saving, R.drawable.piggy, Color.GREEN);
+        changeImageColor(view, R.id.img_electricity_consumed, R.drawable.energy, Color.WHITE);
         setupChart(view);
         drawChart(view);
 
