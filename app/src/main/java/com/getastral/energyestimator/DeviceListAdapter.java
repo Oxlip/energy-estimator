@@ -145,8 +145,6 @@ public class DeviceListAdapter extends BaseAdapter {
         final TextView txtHours = (TextView) convertView.findViewById(R.id.dl_hrs);
 
         SeekBar seekBar = (SeekBar) convertView.findViewById(R.id.dl_active_hours);
-        seekBar.setMax(0);
-        seekBar.setMax(24);
         seekBar.setProgress((int) deviceInfo.activeHours);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
