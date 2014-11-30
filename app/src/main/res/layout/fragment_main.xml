@@ -32,7 +32,7 @@
                 android:id="@+id/txt_electricity_bill"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0"
+                android:text="\?"
                 style="@style/topbar_title_text"
                 />
             <TextView
@@ -60,7 +60,7 @@
                 android:id="@+id/txt_electricity_saving"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0"
+                android:text="\?"
                 style="@style/topbar_title_text"/>
             <TextView
                 android:layout_width="wrap_content"

@@ -3,5 +3,15 @@
 
     <string name="app_name">Energy Estimator</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_settings">Register</string>
+    <string name="city">City</string>
+    <string name="user_full_name">Name</string>
+    <string name="email">Email</string>
+    <string name="mail_report">Send energy conservation tips.</string>
+    <string name="register">Register</string>
 
+    <string name="introduction">
+        Thanks for using Energy Estimator.\n\n
+        Each city has different electricity cost, please enter your city name to get electricity rating for your city.
+    </string>
 </resources>

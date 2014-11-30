@@ -2,11 +2,11 @@ package com.getastral.energyestimator;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -77,11 +77,24 @@ public class MainFragment extends Fragment {
     public MainFragment() {
     }
 
-    private void changeImageColor(View parentView, int imageId, int drawableId, int color) {
+    private void setupImageView(View parentView, int imageId, int drawableId, int color, View.OnClickListener onClickListener) {
         Drawable myIcon = getResources().getDrawable(drawableId);
         myIcon.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
-        ((ImageView)parentView.findViewById(imageId)).setImageDrawable(myIcon);
+
+        ImageView imgView = (ImageView)parentView.findViewById(imageId);
+        imgView.setImageDrawable(myIcon);
+        if (onClickListener != null) {
+            imgView.setOnClickListener(onClickListener);
+        }
     }
+
+    private View.OnClickListener summaryImgOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+        }
+    };
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
@@ -89,9 +102,11 @@ public class MainFragment extends Fragment {
         View listViewHeader = getActivity().getLayoutInflater().inflate(R.layout.header_appliance_list, null);
         getListView(view).addHeaderView(listViewHeader);
 
-        changeImageColor(view, R.id.img_electricity_bill, R.drawable.bill, Color.WHITE);
-        changeImageColor(view, R.id.img_electricity_saving, R.drawable.piggy, Color.GREEN);
-        changeImageColor(view, R.id.img_electricity_consumed, R.drawable.energy, Color.WHITE);
+        ImageView imgElectricityBill = (ImageView)view.findViewById(R.id.img_electricity_bill);
+
+        setupImageView(view, R.id.img_electricity_bill, R.drawable.bill, Color.WHITE, summaryImgOnClickListener);
+        setupImageView(view, R.id.img_electricity_saving, R.drawable.piggy, Color.GREEN, summaryImgOnClickListener);
+        setupImageView(view, R.id.img_electricity_consumed, R.drawable.energy, Color.WHITE, null);
         setupChart(view);
         drawChart(view);
 
