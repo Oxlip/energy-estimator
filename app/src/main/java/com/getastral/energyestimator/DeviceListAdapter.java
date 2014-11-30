@@ -14,7 +14,6 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -143,6 +142,8 @@ public class DeviceListAdapter extends BaseAdapter {
         TextView txtName = (TextView) convertView.findViewById(R.id.dl_name);
         txtName.setText(deviceInfo.name);
 
+        final TextView txtHours = (TextView) convertView.findViewById(R.id.dl_hrs);
+
         SeekBar seekBar = (SeekBar) convertView.findViewById(R.id.dl_active_hours);
         seekBar.setMax(0);
         seekBar.setMax(24);
@@ -157,8 +158,7 @@ public class DeviceListAdapter extends BaseAdapter {
                 if (mOnSeekStopListener != null) {
                     mOnSeekStopListener.onSeekStop(deviceInfo, activeHours);
                 }
-
-                Toast.makeText(mContext, String.valueOf(activeHours), Toast.LENGTH_SHORT).show();
+                txtHours.setText(activeHours + " hour" + ((activeHours > 1) ? "s" : ""));
             }
 
             @Override
