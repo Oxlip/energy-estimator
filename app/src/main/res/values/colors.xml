@@ -16,5 +16,9 @@
     <color name="topbar">#2e3034</color>
     <color name="gray">#b4bec2</color>
 
+    <color name="seekbar_default_screen_bg">#f9f9f9</color>
+    <color name="seekbar_rounded_container_bg">#222222</color>
+    <color name="seekbar_rounded_container_border">#3b3f44</color>
+    <color name="seekbar_light_gray_header_color">#646663</color>
 
 </resources>
