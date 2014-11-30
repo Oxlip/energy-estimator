@@ -42,7 +42,7 @@ public class DeviceListAdapter extends BaseAdapter {
          * @param deviceInfo The deviceInfo whose value was changed.
          * @param value New seeked value.
          */
-        void onSeekStop(DatabaseHelper.DeviceInfo deviceInfo, int value);
+        void onSeekStop(DatabaseHelper.DeviceInfo deviceInfo, float value);
     }
 
     public void setOnSeekStopListener(OnSeekStopListener onSeekStopListener) {
@@ -125,6 +125,10 @@ public class DeviceListAdapter extends BaseAdapter {
         mListview = listView;
     }
 
+    private void showActiveHours(TextView txtHours, float hours) {
+        txtHours.setText(hours + " hour" + ((hours > 1) ? "s" : ""));
+    }
+
     /**
      * Renders the UI for the given device item.
      */
@@ -143,20 +147,21 @@ public class DeviceListAdapter extends BaseAdapter {
         txtName.setText(deviceInfo.name);
 
         final TextView txtHours = (TextView) convertView.findViewById(R.id.dl_hrs);
+        showActiveHours(txtHours, deviceInfo.activeHours / 2);
 
         SeekBar seekBar = (SeekBar) convertView.findViewById(R.id.dl_active_hours);
+        seekBar.setMax(48);
         seekBar.setProgress((int) deviceInfo.activeHours);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                int activeHours = seekBar.getProgress();
+                float activeHours = seekBar.getProgress() / 2;
                 deviceInfo.activeHours = activeHours;
                 DatabaseHelper.saveDeviceInfo(deviceInfo);
 
                 if (mOnSeekStopListener != null) {
                     mOnSeekStopListener.onSeekStop(deviceInfo, activeHours);
                 }
-                txtHours.setText(activeHours + " hour" + ((activeHours > 1) ? "s" : ""));
             }
 
             @Override
@@ -165,6 +170,7 @@ public class DeviceListAdapter extends BaseAdapter {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                showActiveHours(txtHours,  progress / 2);
             }
         });
 

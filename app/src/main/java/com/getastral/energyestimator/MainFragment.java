@@ -311,7 +311,7 @@ public class MainFragment extends Fragment {
         DeviceListAdapter deviceListAdapter = DeviceListAdapter.getInstance(activity, deviceList);
         deviceListAdapter.setOnSeekStopListener(new DeviceListAdapter.OnSeekStopListener() {
             @Override
-            public void onSeekStop(DatabaseHelper.DeviceInfo deviceInfo, int value) {
+            public void onSeekStop(DatabaseHelper.DeviceInfo deviceInfo, float value) {
                 drawChart(getView());
             }
         });
