@@ -2,7 +2,9 @@ package com.getastral.energyestimator;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -12,7 +14,15 @@ public class MainActivity extends Activity implements MainFragment.Callbacks {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean registered = pref.getBoolean("registered", false);
+        if(registered) {
+            setContentView(R.layout.activity_main);
+        } else {
+            startActivity(new Intent(this, RegisterActivity.class));
+            finish();
+        }
     }
 
 
@@ -32,7 +42,7 @@ public class MainActivity extends Activity implements MainFragment.Callbacks {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Intent intent = new Intent(this, SettingsActivity.class);
+            Intent intent = new Intent(this, RegisterActivity.class);
             //myIntent.putExtra("key", value); //Optional parameters
             this.startActivity(intent);
             return true;

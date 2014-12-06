@@ -2,20 +2,24 @@ package com.getastral.energyestimator;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 
-public class SettingsActivity extends Activity {
+public class RegisterActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
+        setContentView(R.layout.activity_register);
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment())
@@ -57,7 +61,30 @@ public class SettingsActivity extends Activity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_settings, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_register, container, false);
+
+            Button btnRegister = (Button) rootView.findViewById(R.id.btn_register);
+            btnRegister.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Activity activity = getActivity();
+                    SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(activity);
+                    boolean alreadyRegistered = pref.getBoolean("registered", false);
+
+                    SharedPreferences.Editor ed = pref.edit();
+                    ed.putBoolean("registered", true);
+                    ed.commit();
+                    /**
+                     * If this is the first time the app is launched then relauch the main activity
+                     * since it would called finish() when launching registerActicity.
+                     */
+                    if (!alreadyRegistered) {
+                        startActivity(new Intent(activity,  MainActivity.class));
+                    }
+                    activity.finish();
+                }
+            });
+
             return rootView;
         }
     }
