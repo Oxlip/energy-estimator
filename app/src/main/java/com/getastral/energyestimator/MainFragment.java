@@ -1,12 +1,12 @@
 package com.getastral.energyestimator;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -340,7 +340,7 @@ public class MainFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fm = getFragmentManager();
+                FragmentManager fm =  getActivity().getSupportFragmentManager();
                 NewApplianceDialog newApplianceDialog = NewApplianceDialog.newInstance("Select Appliance");
                 newApplianceDialog.show(fm, "fragment_new_appliance");
             }
