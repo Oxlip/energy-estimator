@@ -9,7 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class MainActivity extends FragmentActivity implements MainFragment.Callbacks {
+public class MainActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,6 +17,7 @@ public class MainActivity extends FragmentActivity implements MainFragment.Callb
 
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean registered = pref.getBoolean("registered", false);
+
         if(registered) {
             setContentView(R.layout.activity_main);
         } else {
@@ -49,13 +50,5 @@ public class MainActivity extends FragmentActivity implements MainFragment.Callb
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * Callback method from {@link MainFragment.Callbacks}
-     * indicating that the item with the given ID was selected.
-     */
-    @Override
-    public void onItemSelected(String id) {
     }
 }
