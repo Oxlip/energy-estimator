@@ -7,7 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
@@ -23,7 +26,7 @@ public class ReportListAdapter extends BaseAdapter {
 
     private static ReportListAdapter mInstance = null;
 
-    private int TOTAL_REPORTS = 3;
+    private int TOTAL_REPORTS = 2;
 
     protected ReportListAdapter() {
         // Exists only to defeat instantiation.
@@ -60,17 +63,35 @@ public class ReportListAdapter extends BaseAdapter {
      */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        switch (position) {
+            case 0:
+                return getPieChart(convertView, parent);
+            case 1:
+                return getBarChart(convertView, parent);
+        }
+        return null;
+    }
+
+    private View getPieChart(View convertView, ViewGroup parent) {
         if (convertView == null) {
             LayoutInflater mInflater = (LayoutInflater) ApplicationGlobals.getAppContext().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             convertView = mInflater.inflate(R.layout.item_piechart, null);
         }
         setupPieChart(convertView);
-        drawPieChart(convertView);
+        return convertView;
+    }
+
+    private View getBarChart(View convertView, ViewGroup parent) {
+        if (convertView == null) {
+            LayoutInflater mInflater = (LayoutInflater) ApplicationGlobals.getAppContext().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+            convertView = mInflater.inflate(R.layout.item_barchart, null);
+        }
+        setupBarChart(convertView);
         return convertView;
     }
 
     private void setPieChartData(PieChart chart, PowerConsumptionInfo powerConsumptionInfo) {
-        PieDataSet pieDataSet = new PieDataSet(powerConsumptionInfo.usageChartYVals, "");
+        PieDataSet pieDataSet = new PieDataSet(powerConsumptionInfo.applianceUsage, "");
         pieDataSet.setSliceSpace(3f);
 
         // add a lot of colors
@@ -96,7 +117,7 @@ public class ReportListAdapter extends BaseAdapter {
 
         pieDataSet.setColors(colors);
 
-        PieData data = new PieData(powerConsumptionInfo.usageChartXVals, pieDataSet);
+        PieData data = new PieData(powerConsumptionInfo.applianceNames, pieDataSet);
         chart.setData(data);
 
         // undo all highlights
@@ -129,12 +150,7 @@ public class ReportListAdapter extends BaseAdapter {
         chart.setCenterText("Electricity\nExpense");
         chart.setDrawCenterText(true);
 
-    }
-
-    private void drawPieChart(View view) {
-        PowerConsumptionInfo powerConsumptionInfo = new PowerConsumptionInfo();
-        PieChart chart = (PieChart) view.findViewById(R.id.chart);
-        setPieChartData(chart, powerConsumptionInfo);
+        setPieChartData(chart, new PowerConsumptionInfo());
 
         chart.setDrawLegend(true);
         Legend l = chart.getLegend();
@@ -145,4 +161,53 @@ public class ReportListAdapter extends BaseAdapter {
         chart.animateXY(500, 500);
     }
 
+
+    private void setBarChartData(BarChart chart, PowerConsumptionInfo powerConsumptionInfo) {
+        BarDataSet barDataSet = new BarDataSet(powerConsumptionInfo.slabUsageValues, "");
+
+        // add a lot of colors
+
+        ArrayList<Integer> colors = new ArrayList<Integer>();
+
+        for (int c : ColorTemplate.VORDIPLOM_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.JOYFUL_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.COLORFUL_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.LIBERTY_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.PASTEL_COLORS)
+            colors.add(c);
+
+        colors.add(ColorTemplate.getHoloBlue());
+
+        barDataSet.setColors(colors);
+
+        BarData data = new BarData(powerConsumptionInfo.slabNames, barDataSet);
+        chart.setData(data);
+
+        // undo all highlights
+        chart.highlightValues(null);
+
+        chart.invalidate();
+    }
+
+    private void setupBarChart(View view) {
+        BarChart chart = (BarChart) view.findViewById(R.id.chart);
+
+        setBarChartData(chart, new PowerConsumptionInfo());
+        chart.set3DEnabled(false);
+        chart.setDrawBarShadow(false);
+        chart.setDrawValueAboveBar(false);
+        chart.setDrawGridBackground(false);
+        chart.setDrawVerticalGrid(false);
+        chart.setDrawHorizontalGrid(false);
+        chart.setDrawGridBackground(false);
+        chart.animateY(1500);
+    }
 }
