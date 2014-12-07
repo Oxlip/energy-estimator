@@ -15,4 +15,8 @@
 Please register so that we can keep you informed about energy saving tips.\n\n\
 Each city has different electricity cost, please enter your city name to get electricity rating for your city.
     </string>
+
+    <string name="tab_appliance_list">Home</string>
+    <string name="tab_report">Report</string>
+    <string name="tab_tips">Tips</string>
 </resources>

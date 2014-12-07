@@ -79,7 +79,7 @@ public class RegisterActivity extends Activity {
                      * since it would called finish() when launching registerActicity.
                      */
                     if (!alreadyRegistered) {
-                        startActivity(new Intent(activity,  MainActivity.class));
+                        startActivity(new Intent(activity,  ScreenSlidePagerActivity.class));
                     }
                     activity.finish();
                 }

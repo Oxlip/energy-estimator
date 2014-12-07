@@ -28,7 +28,7 @@ import com.melnykov.fab.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainFragment extends Fragment {
+public class HomeFragment extends Fragment {
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -45,7 +45,7 @@ public class MainFragment extends Fragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public MainFragment() {
+    public HomeFragment() {
     }
 
     private void setupImageView(View parentView, int imageId, int drawableId, int color, View.OnClickListener onClickListener) {
@@ -68,7 +68,7 @@ public class MainFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_main, container, false);
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         View listViewHeader = getActivity().getLayoutInflater().inflate(R.layout.header_appliance_list, null);
         getListView(view).addHeaderView(listViewHeader);
@@ -246,7 +246,7 @@ public class MainFragment extends Fragment {
         }
 
         if (view == null) {
-            Log.d("MainFragment", "Empty view");
+            Log.d("HomeFragment", "Empty view");
             return null;
         }
         return (ListView) view.findViewById(R.id.device_list);
@@ -256,10 +256,9 @@ public class MainFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
 
         super.onActivityCreated(savedInstanceState);
-        final MainActivity activity = (MainActivity)getActivity();
 
         List<DatabaseHelper.DeviceInfo> deviceList = DatabaseHelper.getDevices();
-        DeviceListAdapter deviceListAdapter = DeviceListAdapter.getInstance(activity, deviceList);
+        DeviceListAdapter deviceListAdapter = DeviceListAdapter.getInstance(getActivity(), deviceList);
         deviceListAdapter.setOnSeekStopListener(new DeviceListAdapter.OnSeekStopListener() {
             @Override
             public void onSeekStop(DatabaseHelper.DeviceInfo deviceInfo, float value) {
