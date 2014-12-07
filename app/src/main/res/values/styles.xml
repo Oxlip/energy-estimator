@@ -6,7 +6,7 @@
     </style>
 
     <style name="topbar_title_text">
-        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textColor">@android:color/primary_text_dark</item>
         <item name="android:textSize">22sp</item>
     </style>
 

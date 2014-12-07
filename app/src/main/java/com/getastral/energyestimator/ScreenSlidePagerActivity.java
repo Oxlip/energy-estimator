@@ -21,7 +21,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
     /**
      * The number of pages (wizard steps) to show in this demo.
      */
-    private static final int NUM_PAGES = 3;
+    private static final int NUM_PAGES = 2;
 
     /**
      * The pager widget, which handles animation and allows swiping horizontally to access previous
@@ -114,15 +114,19 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
                     return context.getString(R.string.tab_appliance_list);
                 case 1:
                     return context.getString(R.string.tab_report);
-                case 2:
-                    return context.getString(R.string.tab_tips);
             }
             return "Error";
         }
 
         @Override
         public Fragment getItem(int position) {
-            return new HomeFragment();
+            switch (position) {
+                case 0:
+                    return new HomeFragment();
+                case 1:
+                    return new ReportFragment();
+            }
+            return null;
         }
 
         @Override
