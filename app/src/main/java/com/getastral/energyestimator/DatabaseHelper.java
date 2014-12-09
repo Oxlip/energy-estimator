@@ -40,6 +40,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<DeviceInfo, String> deviceInfoDao = null;
     private Dao<ApplianceType, String> applianceTypeDao = null;
     private Dao<ApplianceMake, String> applianceMakeDao = null;
+    private Dao<ElectricityProvider, String> electricityProviderDao = null;
+    private Dao<ElectricityRates, String> electricityRatesDao = null;
 
     // cached copy of appliance type and make
     private static List<ApplianceType> applianceTypeList = null;
@@ -73,6 +75,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             String strLine;
             while ((strLine = br.readLine()) != null) {
+                strLine = strLine.trim();
+                if (strLine.compareTo("") == 0) {
+                    continue;
+                }
+                while (!strLine.endsWith(";")) {
+                    String newLine = br.readLine();
+                    if (newLine == null) {
+                        throw new Exception("Database statement without semicolon");
+                    }
+                    strLine += newLine.trim();
+                }
+                Log.d("Database", "Executing " + strLine);
                 applianceMakeDao.updateRaw(strLine);
             }
             in.close();
@@ -93,6 +107,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, DeviceInfo.class);
             TableUtils.createTable(connectionSource, ApplianceMake.class);
             TableUtils.createTable(connectionSource, ApplianceType.class);
+            TableUtils.createTable(connectionSource, ElectricityProvider.class);
+            TableUtils.createTable(connectionSource, ElectricityRates.class);
             populateTables();
         } catch (SQLException e) {
             Log.e(LOG_TAG_DATABASE_HELPER, "Can't create database", e);
@@ -147,6 +163,28 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             applianceMakeDao = getDao(ApplianceMake.class);
         }
         return applianceMakeDao;
+    }
+
+    /**
+     * Returns the Database Access Object (DAO) for ElectricityRates.
+     * It will create it or just give the cached value.
+     */
+    public Dao<ElectricityRates, String> getElectricityRatesDao() throws SQLException {
+        if (electricityRatesDao == null) {
+            electricityRatesDao = getDao(ElectricityRates.class);
+        }
+        return electricityRatesDao;
+    }
+
+    /**
+     * Returns the Database Access Object (DAO) for ElectricityProvider.
+     * It will create it or just give the cached value.
+     */
+    public Dao<ElectricityProvider, String> getElectricityProviderDao() throws SQLException {
+        if (electricityProviderDao == null) {
+            electricityProviderDao = getDao(ElectricityProvider.class);
+        }
+        return electricityProviderDao;
     }
 
     /**
@@ -385,6 +423,98 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         float standbyWatts;
 
         DeviceInfo() {
+            // needed by ormlite
+        }
+    }
+
+    /**
+     * Electricity Provider.
+     */
+    @DatabaseTable(tableName = "ElectricityProvider")
+    public static class ElectricityProvider {
+        /**
+         * Unique id.
+         */
+        @DatabaseField(generatedId = true)
+        int id;
+
+        /**
+         * State Name.
+         */
+        @DatabaseField
+        String stateName;
+
+        /**
+         * Provider Name.
+         */
+        @DatabaseField
+        String name;
+
+        ElectricityProvider() {
+            // needed by ormlite
+        }
+    }
+
+    /**
+     * Electricity Rates.
+     */
+    @DatabaseTable(tableName = "ElectricityRates")
+    public static class ElectricityRates {
+        @DatabaseField(generatedId = true)
+        int id;
+
+        @DatabaseField(foreign = true, columnName="providerId")
+        ElectricityProvider electricityProvider;
+
+        /**
+         * Billing period in days.
+         */
+        @DatabaseField
+        int billingPeriod;
+
+        /**
+         * Condition for units consumed in the billing cycle.
+         */
+        @DatabaseField
+        int conditionUnitsStart;
+
+        @DatabaseField
+        int conditionUnitsEnd;
+
+        /**
+         * Condition max load connected.
+         */
+        @DatabaseField
+        int conditionLoadStart;
+
+        @DatabaseField
+        int conditionLoadEnd;
+
+        /**
+         * Single phase or 3 phase.
+         */
+        @DatabaseField
+        boolean conditionSinglePhase;
+
+        /**
+         * Unit range start.
+         */
+        @DatabaseField
+        int startUnit;
+
+        /**
+         * Unit range end.
+         */
+        @DatabaseField
+        int endUnit;
+
+        /**
+         * Rate in rupees.
+         */
+        @DatabaseField
+        float rate;
+
+        ElectricityRates() {
             // needed by ormlite
         }
     }
