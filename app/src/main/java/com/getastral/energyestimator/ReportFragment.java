@@ -64,9 +64,9 @@ public class ReportFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
 
         super.onActivityCreated(savedInstanceState);
-
         ReportListAdapter reportListAdapter = ReportListAdapter.getInstance();
         final ListView listView = getListView(null);
         listView.setAdapter(reportListAdapter);
+
     }
 }

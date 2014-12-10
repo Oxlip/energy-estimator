@@ -1,5 +1,6 @@
 package com.getastral.energyestimator;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -40,6 +41,8 @@ public class HomeFragment extends Fragment {
         listView.setAdapter(deviceListAdapter);
         deviceListAdapter.setListView(listView);
 
+        final FloatingActionsMenu fam = (FloatingActionsMenu) getView().findViewById(R.id.fab_menu);
+
         FloatingActionButton fab_add = (FloatingActionButton)  getView().findViewById(R.id.fab_add_appliance);
         fab_add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,7 +50,6 @@ public class HomeFragment extends Fragment {
                 FragmentManager fm =  getActivity().getSupportFragmentManager();
                 NewApplianceDialog newApplianceDialog = NewApplianceDialog.newInstance("Select Appliance");
                 newApplianceDialog.show(fm, "fragment_new_appliance");
-                FloatingActionsMenu fam = (FloatingActionsMenu) getView().findViewById(R.id.fab_menu);
                 fam.collapse();
             }
         });
@@ -56,7 +58,9 @@ public class HomeFragment extends Fragment {
         fab_report.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(getActivity(), ReportActivity.class);
+                startActivity(intent);
+                fam.collapse();
             }
         });
     }
