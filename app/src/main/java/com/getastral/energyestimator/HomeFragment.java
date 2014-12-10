@@ -8,7 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.melnykov.fab.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import java.util.List;
 
@@ -39,13 +40,23 @@ public class HomeFragment extends Fragment {
         listView.setAdapter(deviceListAdapter);
         deviceListAdapter.setListView(listView);
 
-        FloatingActionButton fab = (FloatingActionButton)  getView().findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton fab_add = (FloatingActionButton)  getView().findViewById(R.id.fab_add_appliance);
+        fab_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FragmentManager fm =  getActivity().getSupportFragmentManager();
                 NewApplianceDialog newApplianceDialog = NewApplianceDialog.newInstance("Select Appliance");
                 newApplianceDialog.show(fm, "fragment_new_appliance");
+                FloatingActionsMenu fam = (FloatingActionsMenu) getView().findViewById(R.id.fab_menu);
+                fam.collapse();
+            }
+        });
+
+        FloatingActionButton fab_report = (FloatingActionButton)  getView().findViewById(R.id.fab_show_report);
+        fab_report.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+
             }
         });
     }
