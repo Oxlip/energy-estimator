@@ -4,11 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
+import com.fortysevendeg.swipelistview.BaseSwipeListViewListener;
+import com.fortysevendeg.swipelistview.SwipeListView;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
@@ -36,8 +38,55 @@ public class HomeFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         List<DatabaseHelper.DeviceInfo> deviceList = DatabaseHelper.getDevices();
-        DeviceListAdapter deviceListAdapter = DeviceListAdapter.getInstance(getActivity(), deviceList);
-        final ListView listView = (ListView) getView().findViewById(R.id.device_list);
+        final DeviceListAdapter deviceListAdapter = DeviceListAdapter.getInstance(getActivity(), deviceList);
+        final SwipeListView listView = (SwipeListView) getView().findViewById(R.id.device_list);
+
+        listView.setSwipeListViewListener(new BaseSwipeListViewListener() {
+            @Override
+            public void onOpened(int position, boolean toRight) {
+            }
+
+            @Override
+            public void onClosed(int position, boolean fromRight) {
+            }
+
+            @Override
+            public void onListChanged() {
+            }
+
+            @Override
+            public void onMove(int position, float x) {
+            }
+
+            @Override
+            public void onStartOpen(int position, int action, boolean right) {
+                Log.d("swipe", String.format("onStartOpen %d - action %d", position, action));
+            }
+
+            @Override
+            public void onStartClose(int position, boolean right) {
+                Log.d("swipe", String.format("onStartClose %d", position));
+            }
+
+            @Override
+            public void onClickFrontView(int position) {
+                Log.d("swipe", String.format("onClickFrontView %d", position));
+            }
+
+            @Override
+            public void onClickBackView(int position) {
+                Log.d("swipe", String.format("onClickBackView %d", position));
+            }
+
+            @Override
+            public void onDismiss(int[] reverseSortedPositions) {
+                for (int position : reverseSortedPositions) {
+                    //data.remove(position);
+                }
+                deviceListAdapter.notifyDataSetChanged();
+            }
+
+        });
         listView.setAdapter(deviceListAdapter);
         deviceListAdapter.setListView(listView);
 
