@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/report_background"
+
     android:weightSum="3">
 
     <LinearLayout
@@ -92,12 +92,17 @@
                 style="@style/topbar_descriptive_text"/>
         </LinearLayout>
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray">
+    </LinearLayout>
 
     <ListView
         android:id="@+id/report_list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:divider="@null"
-        android:dividerHeight="0dp">
+        android:padding="4dp"
+        android:dividerHeight="4dp">
     </ListView>
 </LinearLayout>
