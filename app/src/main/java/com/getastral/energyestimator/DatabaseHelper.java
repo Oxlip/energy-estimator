@@ -275,6 +275,37 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return applianceMakeList;
     }
 
+
+    public static ElectricityProvider getElectricityProvider(String stateName, String name) {
+        try {
+            Dao<ElectricityProvider, String> dao = getInstance().getElectricityProviderDao();
+            List<ElectricityProvider> providerList = dao.queryBuilder().where().eq("stateName", stateName).and().eq("name", name).query();
+            if (providerList == null) {
+                return null;
+            }
+            if (providerList.size() != 1) {
+                return null;
+            }
+            return providerList.get(0);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Returns electricity rates for the given state/city.
+     *
+     * @return List of Electricity Rates.
+     */
+    public static List<ElectricityRates> getElectricityRateList(String stateName, String name) {
+        try {
+            ElectricityProvider provider = getElectricityProvider(stateName, name);
+            return getInstance().getElectricityRatesDao().queryBuilder().where().eq("providerId", provider.id).query();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * Close the database connections and clear any cached DAOs.
      */
@@ -517,5 +548,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         ElectricityRates() {
             // needed by ormlite
         }
+
     }
 }
