@@ -136,10 +136,12 @@ public class ReportListAdapter extends BaseAdapter {
         param.rightMargin = 5;
         param.topMargin = 5;
         param.rowSpec = GridLayout.spec(0);
-        param.columnSpec = GridLayout.spec(column, 1f);
+        param.columnSpec = GridLayout.spec(column);
+
         param.setGravity(gravity);
 
         TextView textView = new TextView(context);
+
         textView.setTextColor(Color.BLACK);
         textView.setText(title);
         textView.setTypeface(null, Typeface.BOLD);
@@ -158,6 +160,7 @@ public class ReportListAdapter extends BaseAdapter {
 
         param.rowSpec = GridLayout.spec(row);
         param.columnSpec = GridLayout.spec(column);
+        param.setGravity(gravity);
 
         TextView textView = new TextView(context);
         textView.setTextColor(Color.BLACK);

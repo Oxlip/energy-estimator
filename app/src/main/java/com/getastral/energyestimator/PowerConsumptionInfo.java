@@ -1,5 +1,7 @@
 package com.getastral.energyestimator;
 
+import android.util.Log;
+
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 
@@ -47,19 +49,33 @@ class PowerConsumptionInfo {
             xIndex++;
         }
 
-        float totalWatts = totalActiveWatts + totalStandbyWatts;
-        float remainingWatts = totalWatts;
-        float usageRate[] = {1f, 1.5f, 3.0f};
-        int usageLimit[] = {1000, 30000, 100000};
+        float totalUnitsPerDay = (totalActiveWatts + totalStandbyWatts) / 1000;
+        int TOTAL_DAYS = 60;
+        float remainingUnits = totalUnitsPerDay * TOTAL_DAYS;
+        List<DatabaseHelper.ElectricityRates> list;
 
-        for(int i=0; i<3 && remainingWatts > 0 ; i++) {
-            float used = usageLimit[i];
-            if (remainingWatts < used ) {
-                used = remainingWatts;
+        Log.d("PC", "Total watts per day " + totalUnitsPerDay);
+        int i=0;
+        list = DatabaseHelper.getElectricityRateList("Tamil Nadu", "Public");
+        for(DatabaseHelper.ElectricityRates er: list) {
+            float totalWattsPerBillingPeriod = totalUnitsPerDay * er.billingPeriod;
+            float cStart = er.conditionUnitsStart, cEnd = er.conditionUnitsEnd;
+            float slabUnits, units;
+            if (er.endUnit == -1f) {
+                slabUnits = remainingUnits;
+            } else {
+                slabUnits = er.endUnit - er.startUnit;
+                if (slabUnits > remainingUnits) {
+                    slabUnits = remainingUnits;
+                }
             }
-            slabNames.add(String.format("Rs. %2.2f", usageRate[i]));
-            slabUsageValues.add(new BarEntry(usageRate[i] * used, i));
-            remainingWatts -= used;
+            Log.d("PC", "cStart " + cStart + " cEnd " + cEnd + " slabWatts " + slabUnits + " remainingUnits " + remainingUnits );
+            if (((cStart == -1f) || (totalWattsPerBillingPeriod > cStart)) &&
+                 ((cEnd == -1f)  || (totalWattsPerBillingPeriod < cEnd))) {
+                slabNames.add(String.format("%6.0fKw @ Rs. %2.2f", slabUnits, er.rate));
+                slabUsageValues.add(new BarEntry(er.rate * slabUnits, i++));
+                remainingUnits -= slabUnits;
+            }
         }
     }
 }
