@@ -4,7 +4,7 @@
     <string name="app_name">Energy Estimator</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_settings">Register</string>
-    <string name="city">City</string>
+
     <string name="user_full_name">Name</string>
     <string name="email">Email</string>
     <string name="mail_report">Send energy conservation tips.</string>
@@ -19,6 +19,7 @@ Please register so that we can keep you informed about energy saving tips.\n\n\
 Each city has different electricity cost, please enter your city name to get electricity rating for your city.
     </string>
 
+    <string name="reg_provider">Provider</string>
     <string name="reg_account_title">
         To which account your saving report should be mailed?
     </string>

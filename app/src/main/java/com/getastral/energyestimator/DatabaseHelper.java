@@ -288,6 +288,29 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     }
 
 
+    /**
+     * Returns list of electricity providers.
+     *
+     */
+    public static List<ElectricityProvider> getElectricityProviders(String stateName) {
+        Dao<ElectricityProvider, String> dao;
+        try {
+            dao = getInstance().getElectricityProviderDao();
+            if (stateName == null) {
+                return dao.queryForAll();
+            } else {
+                return dao.queryBuilder().where().eq("stateName", stateName).query();
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Returns specified electricity provider.
+     *
+     */
     public static ElectricityProvider getElectricityProvider(String stateName, String name) {
         try {
             Dao<ElectricityProvider, String> dao = getInstance().getElectricityProviderDao();

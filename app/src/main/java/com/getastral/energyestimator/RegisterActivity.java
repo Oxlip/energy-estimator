@@ -12,11 +12,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RegisterActivity extends Activity {
     protected static final int PICK_ACCOUNT_REQUEST = 0;
@@ -78,6 +83,17 @@ public class RegisterActivity extends Activity {
         public PlaceholderFragment() {
         }
 
+        protected ArrayList<String> getElectricityProviders() {
+            ArrayList<String> result = new ArrayList<String>();
+            List<DatabaseHelper.ElectricityProvider> providers = DatabaseHelper.getElectricityProviders(null);
+
+            for(DatabaseHelper.ElectricityProvider provider: providers) {
+                result.add(provider.stateName + " - " + provider.name);
+            }
+
+            return result;
+        }
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -104,6 +120,11 @@ public class RegisterActivity extends Activity {
                     activity.finish();
                 }
             });
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+                    android.R.layout.simple_spinner_dropdown_item, getElectricityProviders());
+            Spinner spinnerProvider= (Spinner) rootView.findViewById(R.id.txt_electricity_provider);
+            spinnerProvider.setAdapter(adapter);
 
             return rootView;
         }
