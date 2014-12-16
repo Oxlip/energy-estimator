@@ -42,6 +42,7 @@
                 android:id="@+id/fab_add_appliance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                fab:fab_title="@string/fab_add"
                 fab:fab_icon="@drawable/plus"
                 fab:fab_colorNormal="@color/blue"
                 fab:fab_colorPressed="@color/darkblue"/>
@@ -50,6 +51,7 @@
                 android:id="@+id/fab_show_report"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                fab:fab_title="@string/fab_report"
                 fab:fab_icon="@drawable/bill"
                 fab:fab_colorNormal="@color/green"
                 fab:fab_colorPressed="@color/darkgreen"/>

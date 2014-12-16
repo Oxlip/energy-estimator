@@ -10,6 +10,9 @@
     <string name="mail_report">Send energy conservation tips.</string>
     <string name="register">Continue</string>
 
+    <string name="fab_report">Analyze</string>
+    <string name="fab_add">Add Appliance</string>
+
     <string name="introduction">
         Thanks for using Energy Estimator.\n\n\
 Please register so that we can keep you informed about energy saving tips.\n\n\
