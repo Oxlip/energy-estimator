@@ -1,5 +1,6 @@
 package com.getastral.energyestimator;
 
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
@@ -12,14 +13,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.common.AccountPicker;
 
 public class RegisterActivity extends Activity {
+    protected static final int PICK_ACCOUNT_REQUEST = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+        String accountSelectionTitle = getResources().getString(R.string.reg_account_title);
+
+        Intent googlePicker = AccountPicker.newChooseAccountIntent(null, null,
+                new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE}, true, accountSelectionTitle, null, null, null) ;
+        startActivityForResult(googlePicker, PICK_ACCOUNT_REQUEST);
+
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment())
@@ -27,6 +38,15 @@ public class RegisterActivity extends Activity {
         }
     }
 
+    @Override
+    protected void onActivityResult(final int requestCode,
+                                    final int resultCode, final Intent data) {
+        if (requestCode == PICK_ACCOUNT_REQUEST && resultCode == RESULT_OK) {
+            String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+            EditText txtEmail = (EditText) this.findViewById(R.id.txt_email);
+            txtEmail.setText(accountName);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
