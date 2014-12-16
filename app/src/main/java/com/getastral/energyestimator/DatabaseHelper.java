@@ -199,7 +199,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     }
 
     /**
-     * Returns DeviceInfo for a given deviceAddress
+     * Creates or updates given deviceinfo into database.
      */
     public static void saveDeviceInfo(DeviceInfo deviceInfo) {
         try {
@@ -208,6 +208,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * Deletes given DeviceInfo from database.
+     */
+    public static void deleteDeviceInfo(DeviceInfo deviceInfo) {
+        try {
+            getInstance().getDeviceInfoDao().delete(deviceInfo);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     /**
      * Returns all the devices that are registered to the user.

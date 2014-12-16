@@ -82,6 +82,10 @@ public class HomeFragment extends Fragment {
             public void onDismiss(int[] reverseSortedPositions) {
                 for (int position : reverseSortedPositions) {
                     //data.remove(position);
+                    Log.d("swipe", "deleting " + position);
+                    DatabaseHelper.DeviceInfo deviceInfo = (DatabaseHelper.DeviceInfo)deviceListAdapter.getItem(position);
+                    DatabaseHelper.deleteDeviceInfo(deviceInfo);
+
                 }
                 deviceListAdapter.notifyDataSetChanged();
             }
