@@ -367,9 +367,9 @@ INSERT INTO ElectricityRates(providerId, billingPeriod, conditionUnitsStart, con
                       VALUES(30,              31,                -1,                  -1,              -1,               -1,                 -1,           1, 150, 4.00);
 INSERT INTO ElectricityRates(providerId, billingPeriod, conditionUnitsStart, conditionUnitsEnd, conditionLoadStart, conditionLoadEnd, conditionSinglePhase, startUnit, endUnit, rate)
                       VALUES(30,              31,                -1,                  -1,              -1,               -1,                 -1,           151, 300, 4.50);
-INSERT INTO ElectricityRates(providerId, billingPeriod, conditionUnitsStart, conditionUnitsEnd, conditionLoadStart, conditionLoadEnd, conditionSinglePhase,
+INSERT INTO ElectricityRates(providerId, billingPeriod, conditionUnitsStart, conditionUnitsEnd, conditionLoadStart, conditionLoadEnd, conditionSinglePhase, startUnit, endUnit, rate)
                       VALUES(30,              31,                -1,                  -1,              -1,               -1,                 -1,           301, 500, 5.00);
-INSERT INTO ElectricityRates(providerId, billingPeriod, conditionUnitsStart, conditionUnitsEnd, conditionLoadStart, conditionLoadEnd, conditionSinglePhase,
+INSERT INTO ElectricityRates(providerId, billingPeriod, conditionUnitsStart, conditionUnitsEnd, conditionLoadStart, conditionLoadEnd, conditionSinglePhase, startUnit, endUnit, rate)
                       VALUES(30,              31,                -1,                  -1,              -1,               -1,                 -1,           501, -1, 5.50);
 
 INSERT INTO ElectricityProvider(id, stateName, name) VALUES(31, 'Uttarakhand', 'Public');
