@@ -11,8 +11,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SeekBar;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import java.util.List;
@@ -174,77 +172,6 @@ public class DeviceListAdapter extends BaseAdapter {
             }
         });
 
-        Spinner sprMake = (Spinner) convertView.findViewById(R.id.spinner_make);
-        sprMake.setAdapter(new ApplianceMakeSpinnerAdapter());
-
         return convertView;
-    }
-}
-
-class ApplianceMakeSpinnerAdapter implements SpinnerAdapter {
-    List<DatabaseHelper.ApplianceMake> applianceMakeList;
-    public ApplianceMakeSpinnerAdapter() {
-        applianceMakeList = DatabaseHelper.getApplianceMakeList();
-    }
-
-    @Override
-    public View getDropDownView(int position, View convertView, ViewGroup parent) {
-        return getView(position, convertView, parent);
-    }
-
-    @Override
-    public void registerDataSetObserver(DataSetObserver observer) {
-
-    }
-
-    @Override
-    public void unregisterDataSetObserver(DataSetObserver observer) {
-
-    }
-
-    @Override
-    public int getCount() {
-        return applianceMakeList.size()-1;
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return applianceMakeList.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return 0;
-    }
-
-    @Override
-    public boolean hasStableIds() {
-        return false;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        if (convertView == null) {
-            LayoutInflater mInflater = (LayoutInflater) ApplicationGlobals.getAppContext().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-            convertView = mInflater.inflate(R.layout.appliance_make_spinner, null);
-        }
-        TextView textView = (TextView)convertView.findViewById(R.id.spinner_make_name);
-        textView.setText(applianceMakeList.get(position).name);
-        return convertView;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return 0;
-    }
-
-    @Override
-    public int getViewTypeCount() {
-        return 1;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return false;
     }
 }
