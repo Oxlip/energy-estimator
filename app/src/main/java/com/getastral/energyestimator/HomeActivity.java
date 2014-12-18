@@ -40,10 +40,13 @@ public class HomeActivity extends FragmentActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Intent intent = new Intent(this, RegisterActivity.class);
+        if (id == R.id.actionbar_report) {
+            Intent intent = new Intent(this, ReportActivity.class);
             this.startActivity(intent);
             return true;
+        }
+        if (id == R.id.actionbar_location) {
+
         }
 
         return super.onOptionsItemSelected(item);
