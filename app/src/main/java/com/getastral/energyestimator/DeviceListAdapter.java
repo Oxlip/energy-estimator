@@ -145,15 +145,15 @@ public class DeviceListAdapter extends BaseAdapter {
         txtName.setText(deviceInfo.name);
 
         final TextView txtHours = (TextView) convertView.findViewById(R.id.dl_hrs);
-        showActiveHours(txtHours, deviceInfo.activeHours / 2);
+        showActiveHours(txtHours, deviceInfo.activeHours);
 
         SeekBar seekBar = (SeekBar) convertView.findViewById(R.id.dl_active_hours);
         seekBar.setMax(48);
-        seekBar.setProgress((int) deviceInfo.activeHours);
+        seekBar.setProgress((int)Math.ceil(deviceInfo.activeHours * 2));
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                float activeHours = seekBar.getProgress() / 2;
+                float activeHours = seekBar.getProgress() / 2.0f;
                 deviceInfo.activeHours = activeHours;
                 DatabaseHelper.saveDeviceInfo(deviceInfo);
 
@@ -168,7 +168,7 @@ public class DeviceListAdapter extends BaseAdapter {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                showActiveHours(txtHours,  progress / 2);
+                showActiveHours(txtHours,  progress / 2.0f);
             }
         });
 
