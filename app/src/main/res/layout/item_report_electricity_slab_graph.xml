@@ -5,6 +5,10 @@
     android:padding="16dp"
     android:layout_height="match_parent">
 
+    <TextView
+        android:text="@string/report_slab_bar_title"
+        style="@style/report_chart_title"/>
+
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/chart"
         android:layout_width="match_parent"

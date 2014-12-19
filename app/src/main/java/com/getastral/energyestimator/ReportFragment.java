@@ -27,25 +27,13 @@ public class ReportFragment extends Fragment {
     }
 
     private void updateSummaryValue(View view, PowerConsumptionInfo powerConsumptionInfo) {
-        float bill, savable, consumed;
-        float rate = 2.8f;
-        int yearMultiplier = 365;
-
-        consumed = (powerConsumptionInfo.totalActiveWatts + powerConsumptionInfo.totalStandbyWatts) / 1000;
-        bill = consumed * rate;
-        savable = (bill / 100 * 23) + (powerConsumptionInfo.totalStandbyWatts / 1000 * rate);
-
-        consumed *= yearMultiplier;
-        bill *= yearMultiplier;
-        savable *= yearMultiplier;
-
         TextView txtElectricityBill = (TextView)view.findViewById(R.id.txt_electricity_bill);
         TextView txtElectricitySavable = (TextView)view.findViewById(R.id.txt_electricity_saving);
         TextView txtElectricityConsumed = (TextView)view.findViewById(R.id.txt_electricity_consumed);
 
-        txtElectricityBill.setText(String.format("%.0f", bill));
-        txtElectricitySavable.setText(String.format("%.0f", savable));
-        txtElectricityConsumed.setText(String.format("%.0f", consumed));
+        txtElectricityBill.setText(String.format("%.0f", powerConsumptionInfo.totalCost));
+        txtElectricitySavable.setText(String.format("%.0f", powerConsumptionInfo.savable));
+        txtElectricityConsumed.setText(String.format("%.0f", powerConsumptionInfo.totalUnits));
     }
 
     private ListView getListView(View view) {

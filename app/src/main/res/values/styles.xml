@@ -21,4 +21,12 @@
         <item name="android:background">@drawable/fab_label_background</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
+
+    <style name="report_chart_title">
+        <item name="android:typeface">sans</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/half_black</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
 </resources>

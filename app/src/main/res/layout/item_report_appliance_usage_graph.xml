@@ -5,6 +5,10 @@
     android:padding="16dp"
     android:layout_height="match_parent">
 
+    <TextView
+        android:text="@string/report_appliance_pie_title"
+        style="@style/report_chart_title"/>
+
     <com.github.mikephil.charting.charts.PieChart
         android:id="@+id/chart"
         android:layout_width="match_parent"

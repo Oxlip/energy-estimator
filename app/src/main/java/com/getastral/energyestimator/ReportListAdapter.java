@@ -279,32 +279,26 @@ public class ReportListAdapter extends BaseAdapter {
 
 
     private void setBarChartData(BarChart chart, PowerConsumptionInfo powerConsumptionInfo) {
-        BarDataSet barDataSet = new BarDataSet(powerConsumptionInfo.slabUsageValues, "");
-
         // add a lot of colors
-
-        ArrayList<Integer> colors = new ArrayList<Integer>();
-
-        for (int c : ColorTemplate.VORDIPLOM_COLORS)
-            colors.add(c);
-
-        for (int c : ColorTemplate.JOYFUL_COLORS)
-            colors.add(c);
-
-        for (int c : ColorTemplate.COLORFUL_COLORS)
+        ArrayList<Integer> colors = new ArrayList<>();
+        for (int c : ColorTemplate.PASTEL_COLORS)
             colors.add(c);
 
         for (int c : ColorTemplate.LIBERTY_COLORS)
             colors.add(c);
-
-        for (int c : ColorTemplate.PASTEL_COLORS)
-            colors.add(c);
-
         colors.add(ColorTemplate.getHoloBlue());
 
-        barDataSet.setColors(colors);
+        BarDataSet barSlabRates = new BarDataSet(powerConsumptionInfo.slabCosts, "Watts");
+        barSlabRates.setColors(colors);
+        BarDataSet barSlabUnits = new BarDataSet(powerConsumptionInfo.slabUnitsUsage, "Cost");
+        barSlabUnits.setColors(colors);
 
-        BarData data = new BarData(powerConsumptionInfo.slabNames, barDataSet);
+        ArrayList<BarDataSet> dataSets = new ArrayList<>();
+        dataSets.add(barSlabUnits);
+        dataSets.add(barSlabRates);
+
+        BarData data = new BarData(powerConsumptionInfo.slabNames, dataSets);
+        data.setGroupSpace(110f);
         chart.setData(data);
 
         // undo all highlights
@@ -317,9 +311,9 @@ public class ReportListAdapter extends BaseAdapter {
         BarChart chart = (BarChart) view.findViewById(R.id.chart);
 
         setBarChartData(chart, new PowerConsumptionInfo());
-        chart.set3DEnabled(false);
+        chart.set3DEnabled(true);
         chart.setDrawBarShadow(false);
-        chart.setDrawValueAboveBar(false);
+        chart.setDrawValueAboveBar(true);
         chart.setDrawGridBackground(false);
         chart.setDrawVerticalGrid(false);
         chart.setDrawHorizontalGrid(false);

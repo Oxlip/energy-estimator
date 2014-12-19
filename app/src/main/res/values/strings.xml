@@ -27,7 +27,10 @@ Each city has different electricity cost, please enter your city name to get ele
         To which account your saving report should be mailed?
     </string>
 
-    <string name="tab_appliance_list">Home</string>
+    <string name="report_appliance_pie_title">Cost split by appliances</string>
+    <string name="report_slab_bar_title">Electricity rate slabs</string>
+
+
     <string name="tab_report">Report</string>
     <string name="tab_tips">Tips</string>
 </resources>
