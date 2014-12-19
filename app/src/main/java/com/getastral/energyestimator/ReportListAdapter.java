@@ -3,14 +3,16 @@ package com.getastral.energyestimator;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Typeface;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.GridLayout;
-import android.widget.GridLayout.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -113,8 +115,6 @@ public class ReportListAdapter extends BaseAdapter {
     private void addRowDividerToGrid(GridLayout gridLayout, int row, int columnCount) {
         Context context = ApplicationGlobals.getAppContext();
         GridLayout.LayoutParams param = new GridLayout.LayoutParams();
-        param.height = LayoutParams.WRAP_CONTENT;
-        param.width = LayoutParams.MATCH_PARENT;
         param.rightMargin = 5;
         param.topMargin = 5;
         param.rowSpec = GridLayout.spec(row);
@@ -128,47 +128,45 @@ public class ReportListAdapter extends BaseAdapter {
         gridLayout.addView(linearLayout);
     }
 
-    private void addHeaderToGrid(GridLayout gridLayout, int column, String title, int gravity) {
+    private void addHeaderToGrid(GridLayout gridLayout, int column, String title, int colWidth) {
+        int MARGIN = 5;
         Context context = ApplicationGlobals.getAppContext();
         GridLayout.LayoutParams param = new GridLayout.LayoutParams();
-        param.height = LayoutParams.WRAP_CONTENT;
-        param.width = LayoutParams.WRAP_CONTENT;
-        param.rightMargin = 5;
-        param.topMargin = 5;
+        param.rightMargin = MARGIN;
+        param.topMargin = MARGIN;
         param.rowSpec = GridLayout.spec(0);
         param.columnSpec = GridLayout.spec(column);
-
-        param.setGravity(gravity);
+        param.setGravity(Gravity.FILL_HORIZONTAL);
 
         TextView textView = new TextView(context);
-
         textView.setTextColor(Color.BLACK);
         textView.setText(title);
         textView.setTypeface(null, Typeface.BOLD);
         textView.setLayoutParams(param);
 
+        textView.setWidth(colWidth - (MARGIN * 2));
+
         gridLayout.addView(textView);
     }
 
-    private void addContentToGrid(GridLayout gridLayout, int row, int column, String text, int gravity) {
+    private void addContentToGrid(GridLayout gridLayout, int row, int column, String text, boolean highlight) {
+        int MARGIN = 5;
         Context context = ApplicationGlobals.getAppContext();
         GridLayout.LayoutParams param = new GridLayout.LayoutParams();
-        param.height = LayoutParams.WRAP_CONTENT;
-        param.width = LayoutParams.WRAP_CONTENT;
-        param.rightMargin = 5;
-        param.topMargin = 5;
-
+        param.rightMargin = MARGIN;
+        param.topMargin = MARGIN;
         param.rowSpec = GridLayout.spec(row);
         param.columnSpec = GridLayout.spec(column);
-        param.setGravity(gravity);
+        param.setGravity(Gravity.FILL_HORIZONTAL);
 
         TextView textView = new TextView(context);
-        textView.setTextColor(Color.BLACK);
         textView.setText(text);
         textView.setLayoutParams(param);
-        if (row == 4) {
-            textView.setGravity(Gravity.FILL);
-            textView.setBackgroundColor(Color.LTGRAY);
+        if (highlight) {
+            textView.setBackgroundColor(Color.BLUE);
+            textView.setTextColor(Color.WHITE);
+        } else {
+            textView.setTextColor(Color.BLACK);
         }
 
         gridLayout.addView(textView);
@@ -176,11 +174,17 @@ public class ReportListAdapter extends BaseAdapter {
 
 
     private void setupElectricitySlabTable(View convertView) {
-        int COLUMN_COUNT = 5, HEADER_ROW_COUNT = 1;
+        int COLUMN_COUNT = 5, HEADER_ROW_COUNT = 1, MARGIN = 5;
         int rowCount;
-        // get a reference for the TableLayout
-        GridLayout gridLayout = (GridLayout)convertView.findViewById(R.id.tab_report_electricity_slab_table);
+        int colWidth;
 
+        WindowManager wm = (WindowManager) ApplicationGlobals.getAppContext().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        colWidth = (size.x / COLUMN_COUNT) - MARGIN;
+
+        GridLayout gridLayout = (GridLayout)convertView.findViewById(R.id.tab_report_electricity_slab_table);
         gridLayout.removeAllViews();
 
         List<ElectricityRates> list = DatabaseHelper.getElectricityRateList("Tamil Nadu", "Public");
@@ -189,19 +193,20 @@ public class ReportListAdapter extends BaseAdapter {
         rowCount = (list.size() + HEADER_ROW_COUNT) * 2;
         gridLayout.setRowCount(rowCount);
 
-        addHeaderToGrid(gridLayout, 0, "Condition Start", Gravity.FILL_HORIZONTAL);
-        addHeaderToGrid(gridLayout, 1, "Condition End", Gravity.FILL_HORIZONTAL);
-        addHeaderToGrid(gridLayout, 2, "Start", Gravity.FILL_HORIZONTAL);
-        addHeaderToGrid(gridLayout, 3, "End", Gravity.FILL_HORIZONTAL);
-        addHeaderToGrid(gridLayout, 4, "Rate", Gravity.FILL_HORIZONTAL);
+        addHeaderToGrid(gridLayout, 0, "From", colWidth);
+        addHeaderToGrid(gridLayout, 1, "To", colWidth);
+        addHeaderToGrid(gridLayout, 2, "", colWidth);
+        addHeaderToGrid(gridLayout, 3, "",  colWidth);
+        addHeaderToGrid(gridLayout, 4, "Cost", colWidth);
 
         int row = 1;
         for(ElectricityRates electricityRate: list) {
-            addContentToGrid(gridLayout, row, 0, "" + electricityRate.conditionUnitsStart, Gravity.FILL_HORIZONTAL);
-            addContentToGrid(gridLayout, row, 1, "" + electricityRate.conditionUnitsEnd, Gravity.FILL_HORIZONTAL);
-            addContentToGrid(gridLayout, row, 2, "" + electricityRate.startUnit, Gravity.FILL_HORIZONTAL);
-            addContentToGrid(gridLayout, row, 3, "" + electricityRate.endUnit, Gravity.FILL_HORIZONTAL);
-            addContentToGrid(gridLayout, row, 4, "" + electricityRate.rate, Gravity.FILL_HORIZONTAL);
+            boolean highlight = false;
+            addContentToGrid(gridLayout, row, 0, "" + electricityRate.conditionUnitsStart, highlight);
+            addContentToGrid(gridLayout, row, 1, "" + electricityRate.conditionUnitsEnd, highlight);
+            addContentToGrid(gridLayout, row, 2, "" + electricityRate.startUnit, highlight);
+            addContentToGrid(gridLayout, row, 3, "" + electricityRate.endUnit, highlight);
+            addContentToGrid(gridLayout, row, 4, "" + electricityRate.rate, highlight);
             addRowDividerToGrid(gridLayout, row++, COLUMN_COUNT);
         }
     }
@@ -244,7 +249,7 @@ public class ReportListAdapter extends BaseAdapter {
 
 
     private void setupPieChart(View view) {
-        PieChart chart = (PieChart) view.findViewById(R.id.chart);
+        PieChart chart = (PieChart) view.findViewById(R.id.pie_chart);
         // change the color of the center-hole
         chart.setHoleColor(Color.rgb(235, 235, 235));
         chart.setHoleRadius(60f);
@@ -308,7 +313,7 @@ public class ReportListAdapter extends BaseAdapter {
     }
 
     private void setupBarChart(View view) {
-        BarChart chart = (BarChart) view.findViewById(R.id.chart);
+        BarChart chart = (BarChart) view.findViewById(R.id.bar_chart);
 
         setBarChartData(chart, new PowerConsumptionInfo());
         chart.set3DEnabled(true);

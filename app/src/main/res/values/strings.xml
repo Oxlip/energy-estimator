@@ -29,7 +29,7 @@ Each city has different electricity cost, please enter your city name to get ele
 
     <string name="report_appliance_pie_title">Cost split by appliances</string>
     <string name="report_slab_bar_title">Electricity rate slabs</string>
-
+    <string name="report_slab_table">Slab Rate Information</string>
 
     <string name="tab_report">Report</string>
     <string name="tab_tips">Tips</string>

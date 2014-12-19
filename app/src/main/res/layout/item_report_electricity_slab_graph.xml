@@ -10,7 +10,7 @@
         style="@style/report_chart_title"/>
 
     <com.github.mikephil.charting.charts.BarChart
-        android:id="@+id/chart"
+        android:id="@+id/bar_chart"
         android:layout_width="match_parent"
         android:layout_height="340dp"/>
 
