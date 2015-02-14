@@ -1,6 +1,11 @@
 package com.getastral.energyestimator;
 
+import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -8,13 +13,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.fortysevendeg.swipelistview.BaseSwipeListViewListener;
 import com.fortysevendeg.swipelistview.SwipeListView;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 public class HomeFragment extends Fragment {
 
@@ -40,6 +48,12 @@ public class HomeFragment extends Fragment {
         List<DatabaseHelper.DeviceInfo> deviceList = DatabaseHelper.getDevices();
         final DeviceListAdapter deviceListAdapter = DeviceListAdapter.getInstance(getActivity(), deviceList);
         final SwipeListView listView = (SwipeListView) getView().findViewById(R.id.device_list);
+        final TextView txtUtilityProvider = (TextView) getView().findViewById(R.id.txt_home_utility_provider);
+        final TextView txtState = (TextView) getView().findViewById(R.id.txt_home_state_name);
+
+        String stateName = getState();
+        txtState.setText(stateName);
+        txtUtilityProvider.setText("BESCOM");
 
         listView.setSwipeListViewListener(new BaseSwipeListViewListener() {
             @Override
@@ -116,5 +130,41 @@ public class HomeFragment extends Fragment {
                 fam.collapse();
             }
         });
+    }
+
+    private String getState() {
+        LocationManager lm = (LocationManager)  ApplicationGlobals.getAppContext().getSystemService(Context.LOCATION_SERVICE);
+        List<String> providers = lm.getProviders(true);
+
+        Location location = null;
+
+        for (int i=providers.size()-1; i>=0; i--) {
+            location = lm.getLastKnownLocation(providers.get(i));
+            if (location != null) {
+                break;
+            }
+        }
+
+        if (location == null) {
+            Log.d("GPS", "location is null");
+            return null;
+        }
+
+        Geocoder geocoder;
+        List<Address> addresses;
+        try
+        {
+            geocoder = new Geocoder(getActivity(), Locale.getDefault());
+            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            String country = addresses.get(0).getCountryName();
+            if (country.compareTo("India") == 0) {
+                return addresses.get(0).getAdminArea();
+            } else {
+                return "";
+            }
+        } catch (IOException e) {
+            Log.d("GPS", "Unable to get location" + e);
+            return null;
+        }
     }
 }

@@ -46,7 +46,9 @@ public class HomeActivity extends FragmentActivity {
             return true;
         }
         if (id == R.id.actionbar_location) {
-
+            Intent intent = new Intent(this, RegisterActivity.class);
+            this.startActivity(intent);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

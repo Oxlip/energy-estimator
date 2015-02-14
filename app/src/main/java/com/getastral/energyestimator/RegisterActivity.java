@@ -59,7 +59,6 @@ public class RegisterActivity extends Activity {
         return true;
     }
 
-
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -113,5 +112,6 @@ public class RegisterActivity extends Activity {
 
             return rootView;
         }
+
     }
 }

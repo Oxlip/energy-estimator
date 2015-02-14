@@ -3,58 +3,113 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <com.fortysevendeg.swipelistview.SwipeListView
-        xmlns:swipe="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/device_list"
-        android:listSelector="#00000000"
-        android:layout_width="fill_parent"
+    <LinearLayout
+        android:layout_alignParentTop="true"
+        android:id="@+id/home_topbar"
+        android:background="@color/half_black"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_gravity="start"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/txt_home_bill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="32422"
+                style="@style/topbar_title_text"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Expected Bill"
+                android:textAllCaps="true"
+                style="@style/topbar_descriptive_text"/>
+        </LinearLayout>
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+        <LinearLayout
+            android:layout_gravity="end"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/txt_home_utility_provider"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BESCOM"
+                style="@style/topbar_title_text"/>
+            <TextView
+                android:id="@+id/txt_home_state_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bangalore"
+                android:textAllCaps="true"
+                style="@style/topbar_descriptive_text"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_below="@+id/home_topbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.fortysevendeg.swipelistview.SwipeListView
+            xmlns:swipe="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/device_list"
+            android:listSelector="#00000000"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusable="true"
+            swipe:swipeFrontView="@+id/front"
+            swipe:swipeBackView="@+id/back"
+            swipe:swipeActionLeft="dismiss"
+            swipe:swipeActionRight="dismiss"
+            swipe:swipeMode="right"
+            swipe:swipeCloseAllItemsWhenMoveList="true"
+            swipe:swipeOpenOnLongPress="false"
+            swipe:swipeAnimationTime="500"/>
+
+    </LinearLayout>
+
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:id="@+id/fab_menu"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:focusable="true"
-        swipe:swipeFrontView="@+id/front"
-        swipe:swipeBackView="@+id/back"
-        swipe:swipeActionLeft="dismiss"
-        swipe:swipeActionRight="dismiss"
-        swipe:swipeMode="right"
-        swipe:swipeCloseAllItemsWhenMoveList="true"
-        swipe:swipeOpenOnLongPress="false"
-        swipe:swipeAnimationTime="500"/>
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        fab:fab_addButtonColorNormal="@color/white"
+        fab:fab_addButtonColorPressed="@color/white_pressed"
+        fab:fab_addButtonPlusIconColor="@color/red"
+        fab:fab_labelStyle="@style/menu_labels_style"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp">
 
-        <com.getbase.floatingactionbutton.FloatingActionsMenu
-            android:id="@+id/fab_menu"
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_add_appliance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            fab:fab_addButtonColorNormal="@color/white"
-            fab:fab_addButtonColorPressed="@color/white_pressed"
-            fab:fab_addButtonPlusIconColor="@color/red"
-            fab:fab_labelStyle="@style/menu_labels_style"
-            android:layout_marginBottom="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginEnd="16dp">
+            fab:fab_title="@string/fab_add"
+            fab:fab_icon="@drawable/plus"
+            fab:fab_colorNormal="@color/blue"
+            fab:fab_colorPressed="@color/darkblue"/>
 
-            <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_add_appliance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                fab:fab_title="@string/fab_add"
-                fab:fab_icon="@drawable/plus"
-                fab:fab_colorNormal="@color/blue"
-                fab:fab_colorPressed="@color/darkblue"/>
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_show_report"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_title="@string/fab_report"
+            fab:fab_icon="@drawable/bill"
+            fab:fab_colorNormal="@color/green"
+            fab:fab_colorPressed="@color/darkgreen"/>
 
-            <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_show_report"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                fab:fab_title="@string/fab_report"
-                fab:fab_icon="@drawable/bill"
-                fab:fab_colorNormal="@color/green"
-                fab:fab_colorPressed="@color/darkgreen"/>
-
-        </com.getbase.floatingactionbutton.FloatingActionsMenu>
-
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
 </RelativeLayout>
