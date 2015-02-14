@@ -5,7 +5,7 @@ android {
     buildToolsVersion "21.1.1"
 
     defaultConfig {
-        applicationId "com.getastral.energyestimator"
+        applicationId "in.nuton.energyestimator"
         minSdkVersion 14
         targetSdkVersion 21
         versionCode 1

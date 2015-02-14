@@ -1,4 +1,4 @@
-package com.getastral.energyestimator;
+package in.nuton.energyestimator;
 
 import android.content.Intent;
 import android.content.SharedPreferences;

@@ -1,4 +1,4 @@
-package com.getastral.energyestimator;
+package in.nuton.energyestimator;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

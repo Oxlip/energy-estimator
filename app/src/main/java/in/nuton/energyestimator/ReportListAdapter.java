@@ -1,4 +1,4 @@
-package com.getastral.energyestimator;
+package in.nuton.energyestimator;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,7 +16,6 @@ import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.getastral.energyestimator.DatabaseHelper.ElectricityRates;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.BarData;
@@ -28,6 +27,8 @@ import com.github.mikephil.charting.utils.Legend;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import in.nuton.energyestimator.DatabaseHelper.ElectricityRates;
 
 /**
  * List Adapter to hold all the reports and statistics.
